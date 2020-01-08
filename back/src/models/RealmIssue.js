@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) =>
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKet: true,
+      primaryKey: true,
       autoIncrement: true
     },
     realm_id: {
@@ -15,5 +15,6 @@ module.exports = (sequelize, DataTypes) =>
   }, {
     tableName: 'realms_issues',
     timestamps: true,
+    createdAt: 'created_at',
     updatedAt: false,
   })

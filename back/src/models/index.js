@@ -28,6 +28,8 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+sequelize.sync().then(() => console.log('Database synced.'))
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
