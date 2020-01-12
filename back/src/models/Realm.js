@@ -1,5 +1,5 @@
-module.exports = (sequelize, DataTypes) => 
-  sequelize.define('Realm', {
+module.exports = (sequelize, DataTypes) => {
+  const Realm = sequelize.define('Realm', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) =>
     },
     name: {
       type: DataTypes.STRING,
-      unique: true
+      unique: true,
+      allowNull: false,
     },
     selected: {
       type: DataTypes.BOOLEAN,
@@ -17,8 +18,22 @@ module.exports = (sequelize, DataTypes) =>
     upvotes: {
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    position: {
+      type: DataTypes.INTEGER
     }
   }, {
     tableName: 'realms',
     timestamps: false
-  })
+  });
+
+  Realm.associate = models => {
+    Realm.belongsToMany(models.Issue, {
+      as: 'issues',
+      foreignKey: 'realm_id',
+      otherKey: 'issue_id',
+      through: 'RealmIssue'
+    })
+  };
+  return Realm;
+};

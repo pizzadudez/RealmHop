@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const realmsController = require('../controllers/realms')
+const RealmsRouter = require('./realms');
 
-router.route('/realms')
-  .get(realmsController.getAll)
+router.use('/realms', RealmsRouter);
 
 module.exports = router;

@@ -10,6 +10,8 @@
 - native farmer
 - botter
 - boxer nofly
-- boxer small team
-- boxer large team
+- boxer
 - check later
+
+# Add:
+- zones model

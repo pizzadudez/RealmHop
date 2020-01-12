@@ -13,9 +13,50 @@ db.all("SELECT * FROM hop_realms", (err, rows) => {
     rows.forEach(row => {
       db2.run("INSERT INTO realms (name) VALUES(?)", row.name, err => {
         if (err) console.log(err);
-      })
-    })
+      });
+    });
     db2.run('COMMIT TRANSACTION', err => console.log(err));
-  })
+  });
 });
 
+//-----------------------------------------------------------------------------
+// Issues
+//-----------------------------------------------------------------------------
+
+const issues = [
+  {
+    name: 'unknown',
+    description: 'Check back later.'
+  },
+  {
+    name: 'high_traffic',
+    description: 'Check back later.'
+  },
+  {
+    name: 'multiboxer',
+    description: 'Multiboxer'
+  },
+  {
+    name: 'multiboxer_ground',
+    description: 'Multiboxer without flying, they tend to not leave.'
+  },
+  {
+    name: 'bot',
+    description: 'Long term bot present on this realm.'
+  },
+  {
+    name: 'farmer',
+    description: 'Realm native farmer, annoying and disruptive.'
+  },
+];
+
+db2.serialize(() => {
+  const sql = "INSERT INTO issues (name, description) VALUES(?, ?)";
+  db2.run('BEGIN TRANSACTION');
+  issues.forEach(row => {
+    db2.run(sql, [row.name, row.description], err => {
+      if (err) console.log(err);
+    });
+  });
+  db2.run('COMMIT TRANSACTION', err => console.log(err));
+});
