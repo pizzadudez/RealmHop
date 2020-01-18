@@ -5,6 +5,7 @@
   - list issues with timestamps
   - color code based on issues
 - +1 for realms that go really well (use this to sort)
+- link/unlink realms (same table fk) and set link status with isLinked
 
 # Types of issues:
 - native farmer

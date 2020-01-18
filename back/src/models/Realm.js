@@ -28,12 +28,10 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Realm.associate = models => {
-    Realm.belongsToMany(models.Issue, {
-      as: 'issues',
+    Realm.hasMany(models.RealmIssue, {
       foreignKey: 'realm_id',
-      otherKey: 'issue_id',
-      through: 'RealmIssue'
-    })
+      as: 'issues'
+    });
   };
   return Realm;
 };

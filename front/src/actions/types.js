@@ -1,2 +1,5 @@
 export const FETCH_REALMS = 'FETCH_REALMS';
 export const FETCH_ISSUES = 'FETCH_ISSUES';
+
+export const CHANGE_IS_SELECTED = 'CHANGE_IS_SELECTED';
+export const UPDATE_REALM = 'UPDATE_REALM';
