@@ -5,7 +5,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true}));
 app.use(express.json());
 
-app.use('/', Router);
+app.use('/api', Router);
 
 app.listen(1001, () => {
   console.log('Server running on port: 1001')

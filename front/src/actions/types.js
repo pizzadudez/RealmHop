@@ -1,0 +1,2 @@
+export const FETCH_REALMS = 'FETCH_REALMS';
+export const FETCH_ISSUES = 'FETCH_ISSUES';
