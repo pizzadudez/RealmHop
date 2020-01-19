@@ -24,7 +24,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'realms',
-    timestamps: false
+    timestamps: true,
+    createdAt: false,
+    updatedAt: 'updated_at'
   });
 
   Realm.associate = models => {

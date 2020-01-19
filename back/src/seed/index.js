@@ -8,10 +8,13 @@ const db2 = new sqlite3.Database('../../database.sqlite3', err => {
 });
 
 db.all("SELECT * FROM hop_realms", (err, rows) => {
+  const sql = `INSERT INTO realms (name, position, updated_at) 
+               VALUES(?, ?, datetime('now'))`;
   db2.serialize(() => {
     db2.run('BEGIN TRANSACTION');
-    rows.forEach(row => {
-      db2.run("INSERT INTO realms (name) VALUES(?)", row.name, err => {
+    rows.forEach((row, idx) => {
+      const values = [row.name, idx];
+      db2.run(sql, values, err => {
         if (err) console.log(err);
       });
     });

@@ -1,14 +1,19 @@
-import { FETCH_REALMS, UPDATE_REALM } from '../actions/types';
+import { FETCH_REALMS, UPDATE_REALM, UPDATE_POSITIONS } from '../actions/types';
 
-export default (state = [], action) => {
+export default (state = {}, action) => {
   switch (action.type) {
     case FETCH_REALMS:
       return action.payload;
     case UPDATE_REALM:
-      return state.map(realm => realm.id === action.payload.id
-        ? action.payload
-        : realm
-      )
+      return {
+        ...state,
+        [action.payload.id]: action.payload
+      }
+    case UPDATE_POSITIONS: {
+      const newState = { ...state };
+      action.payload.forEach((id, idx) => newState[id].position = idx);
+      return newState;
+    }
     default:
       return state;
   }

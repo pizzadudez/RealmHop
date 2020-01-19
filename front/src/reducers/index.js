@@ -3,6 +3,6 @@ import realmsReducer from './realmsReducer';
 import issuesReducer from './issuesReducer';
 
 export default combineReducers({
-  realms: realmsReducer,
+  realmsById: realmsReducer,
   issues: issuesReducer,
 });
