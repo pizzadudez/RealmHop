@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { addIssue } from '../actions/realmActions';
 
 const IssueButton = styled.button`
-  width: 30px;
+  width: 40px;
   height: 30px;
 `;
 

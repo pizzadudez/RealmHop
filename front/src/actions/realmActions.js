@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { UPDATE_REALM, UPDATE_POSITIONS } from './types';
+import {
+  UPDATE_REALM,
+  UPDATE_POSITIONS,
+  UPDATING_POSITIONS_END,
+  UPDATING_POSITIONS_START,
+} from './types';
 
 export const changeIsSelected = realm => async dispatch => {
   await axios.patch(`/api/realms/${realm.id}`, { 
@@ -15,12 +20,16 @@ export const addIssue = (realmId, issueId) => async dispatch => {
   }).then(res => dispatch({ type: UPDATE_REALM, payload: res.data }));
 };
 
-export const updatePositions = order => async dispatch => {
+export const updatePositions = (order, remote = false) => async dispatch => {
   dispatch({
     type: UPDATE_POSITIONS,
     payload: order
   });
-  axios.post('/api/realms/positions', { order })
+  if (remote) {
+    await dispatch({ type: UPDATING_POSITIONS_START })
+    axios.post('/api/realms/positions', { order })
+      .then(() => dispatch({ type: UPDATING_POSITIONS_END }))
+  }
 };
 
 export const upvoteRealm = () => async dispatch => {

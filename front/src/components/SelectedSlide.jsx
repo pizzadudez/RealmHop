@@ -11,6 +11,10 @@ const Slide = styled.div`
   width: 250px;
   padding: 4px 6px;
   position: relative;
+  border-bottom: ${props => props.position === 15
+    ? '5px solid black'
+    : undefined
+  };
 `;
 
 export default memo(({
@@ -22,6 +26,7 @@ export default memo(({
     <Slide
       onMouseEnter={() => setShowMenu(true)}
       onMouseLeave={() => setShowMenu(false)}
+      position={realm.position}
     >
       {showMenu
         ? <SelectedMenu realm={realm} />

@@ -11,7 +11,10 @@ export default (state = {}, action) => {
       }
     case UPDATE_POSITIONS: {
       const newState = { ...state };
-      action.payload.forEach((id, idx) => newState[id].position = idx);
+      action.payload.forEach((id, idx) => newState[id] = {
+        ...newState[id],
+        position: idx
+      });
       return newState;
     }
     default:

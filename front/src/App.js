@@ -27,19 +27,11 @@ const SortableList = SortableContainer(({ realmsById, idList }) =>
 
 const stateSelector = createSelector(
   state => state.realmsById,
-  realmsById => {
+  state => state.app.updatingPositions,
+  (realmsById, updatingPositions) => {
     const selected = Object.keys(realmsById)
       .filter(id => realmsById[id].selected)
-      .sort((a, b) => {
-        // handle null positions
-        const x = realmsById[a].position !== null 
-          ? realmsById[a].position 
-          : Infinity;
-        const y = realmsById[b].position !== null 
-          ? realmsById[b].position 
-          : Infinity;
-        return x - y;
-      });
+      .sort((a, b) => realmsById[a].position - realmsById[b].position);
     const recent = Object.keys(realmsById)
       .filter(id => !realmsById[id].selected 
         && (moment(realmsById[id].updated_at) > moment().subtract(6, 'hours')))
@@ -50,25 +42,33 @@ const stateSelector = createSelector(
       realmsById,
       selected,
       recent,
-      old
+      old,
+      updatingPositions
     })
   }
 );
 
 export default memo(() => {
   const dispatch = useDispatch();
-  const { realmsById, selected, recent, old } = useSelector(stateSelector);
+  const {
+    realmsById,
+    selected,
+    recent,
+    old,
+    updatingPositions 
+  } = useSelector(stateSelector);
   const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState([]);
 
   const onSortEnd = useCallback(({ oldIndex, newIndex }) => {
-    // console.log(oldIndex, newIndex)
-    // let newOrder = [...selected];
-    // console.log(newOrder);
-    // newOrder.splice(newIndex, 0, newOrder.splice(oldIndex, 1)[0]);
-    // console.log(newOrder);
     const newOrder = arrayMove(selected, oldIndex, newIndex);
+    setOrder(newOrder);
     dispatch(updatePositions(newOrder));
   }, [selected, dispatch]);
+  const updatePositionsHandler = useCallback(e => {
+    e.preventDefault();
+    dispatch(updatePositions(order, true));
+  }, [dispatch, order]);
 
   useEffect(() => {
     dispatch(fetchData())
@@ -79,23 +79,28 @@ export default memo(() => {
     <div>
       {loading && <div>LOADING</div>}
       {!loading && (
-        <div style={{ display: 'flex' }}>
-          <SortableList
-            realmsById={realmsById}
-            idList={selected}
-            onSortEnd={onSortEnd}
-          />
-          <ul>
-            {recent.map(id => 
-              <DeselectedSlide key={id} realm={realmsById[id]}/>
-            )}
-          </ul>
-          <ul>
-            {old.map(id => 
-              <DeselectedSlide key={id} realm={realmsById[id]}/>
-            )}
-          </ul>
-        </div>
+        <>
+          <button onClick={updatePositionsHandler}>
+            {updatingPositions ? 'Updating...' : 'Update Positions'}
+          </button>
+          <div style={{ display: 'flex' }}>
+            <SortableList
+              realmsById={realmsById}
+              idList={selected}
+              onSortEnd={onSortEnd}
+            />
+            <ul>
+              {recent.map(id => 
+                <DeselectedSlide key={id} realm={realmsById[id]}/>
+              )}
+            </ul>
+            <ul>
+              {old.map(id => 
+                <DeselectedSlide key={id} realm={realmsById[id]}/>
+              )}
+            </ul>
+          </div>
+        </>
       )}
     </div>
   );

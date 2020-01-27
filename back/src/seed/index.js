@@ -36,12 +36,8 @@ const issues = [
     description: 'Check back later.'
   },
   {
-    name: 'multiboxer',
-    description: 'Multiboxer'
-  },
-  {
-    name: 'multiboxer_ground',
-    description: 'Multiboxer without flying, they tend to not leave.'
+    name: 'connected_shard',
+    description: 'Realm is sharing the same shard with other realms.'
   },
   {
     name: 'bot',
@@ -50,6 +46,10 @@ const issues = [
   {
     name: 'farmer',
     description: 'Realm native farmer, annoying and disruptive.'
+  },
+  {
+    name: 'multiboxer',
+    description: 'Multiboxer'
   },
 ];
 
