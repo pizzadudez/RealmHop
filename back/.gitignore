@@ -1,0 +1,14 @@
+# npm
+node_modules
+package-lock.json
+*.log
+*.gz
+
+# custom
+*.sqlite3
+*.db
+*.env
+.env
+
+# seed
+seed/output
