@@ -8,6 +8,7 @@ REALMPOP = os.path.join(dirname, 'input/realmpop.txt')
 # table from: https://worldofwarcraft.com/en-us/game/status/eu
 REALMSTATUS = os.path.join(dirname, 'input/realmstatus.txt')
 OUTPUT = os.path.join(dirname, 'output/connected_realms.json')
+NAME_FIX = {"Aman'Thul": "Aman'thul", "Cho'gall": "Cho’gall"}
 
 
 def parse():
@@ -22,7 +23,9 @@ def parse():
         columns = row.find_all('td')
 
         realm = {}
-        realm['realms'] = [columns[0].find('a').text]
+        realm_name = columns[0].find('a').text
+        realm['realms'] = [NAME_FIX[realm_name]
+                           if NAME_FIX.get(realm_name, None) else realm_name]
         realm['connected'] = True if columns[0].find('abbr') else False
         realm['rp'] = True if columns[1].text == 'RP' else False
         realm['region'] = columns[2].text
@@ -42,8 +45,10 @@ def parse():
             selected_position = int(input(
                 f'parent: {group["realms"]}, (type 1/2/3...):\n'))
             group['realm'] = group['realms'][selected_position-1]
+            group['realms'].pop(selected_position-1)
         else:
             group['realm'] = group['realms'][0]
+            group['realms'] = []
         realms.append(group)
 
     with open(OUTPUT, 'w', encoding='utf-8') as f:
@@ -59,7 +64,10 @@ def add_pop():
     realm_pop_status = {}
     for row in rows:
         columns = row.find_all('div')
-        realm_pop_status[columns[1].text] = columns[3].text
+        realm_name = columns[1].text
+        realm_name = NAME_FIX[realm_name] if NAME_FIX.get(
+            realm_name, None) else realm_name
+        realm_pop_status[realm_name] = columns[3].text
 
     with open(OUTPUT, 'r', encoding='utf-8') as f:
         parsed = json.loads(f.read())

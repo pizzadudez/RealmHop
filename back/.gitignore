@@ -12,3 +12,5 @@ package-lock.json
 
 # seed
 seed/output
+seed/input/*.db
+seed/input/*.sqlite3
