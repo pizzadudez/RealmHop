@@ -1,5 +1,7 @@
-export const FETCH_REALMS = 'FETCH_REALMS';
+export const FETCH_ZONES = 'FETCH_ZONES';
+export const FETCH_SHARDS = 'FETCH_SHARDS';
 export const FETCH_ISSUES = 'FETCH_ISSUES';
+export const LOADING_FINISHED = 'LOADING_FINISHED';
 
 export const UPDATE_REALM = 'UPDATE_REALM';
 export const UPDATE_POSITIONS = 'UPDATE_POSITIONS';

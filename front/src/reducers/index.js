@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux';
-import realmsReducer from './realmsReducer';
-import issuesReducer from './issuesReducer';
 import appReducer from './appReducer';
+import shardsReducer from './shardsReducer';
+import zonesReducer from './zonesReducer';
+import issuesReducer from './issuesReducer';
 
 export default combineReducers({
-  realmsById: realmsReducer,
+  app: appReducer,
+  shardsById: shardsReducer,
+  zones: zonesReducer,
   issues: issuesReducer,
-  app: appReducer
 });

@@ -1,8 +1,10 @@
 const router = require('express').Router();
-const ShardsRouter = require('./shards');
-const ZonesRouter = require('./zones');
+const shardsRouter = require('./shards');
+const zonesRouter = require('./zones');
+const issuesRouter = require('./issues');
 
-router.use('/', ShardsRouter);
-router.use('/zones', ZonesRouter);
+router.use('/', shardsRouter);
+router.use('/zones', zonesRouter);
+router.use('/issues', issuesRouter);
 
 module.exports = router;

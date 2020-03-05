@@ -1,20 +1,24 @@
 import axios from 'axios';
-import { FETCH_REALMS, FETCH_ISSUES } from './types';
+import {
+  FETCH_ZONES,
+  FETCH_SHARDS,
+  LOADING_FINISHED,
+  FETCH_ISSUES,
+} from './types';
 
-export const fetchData = () => async dispatch => {
-  await axios.all([
-    axios.get('/api/realms'),
-    axios.get('/api/issues')
-  ]).then(axios.spread((realmsRes, issuesRes) => {
-    const realmsById = arrayToMap(realmsRes.data);
-    // const issuesById = arrayToMap(issuesRes.data);
-    dispatch({ type: FETCH_REALMS, payload: realmsById });
-    dispatch({ type: FETCH_ISSUES, payload: issuesRes.data });
-  }));
+export const fetchData = () => dispatch => {
+  axios
+    .all([
+      axios.get('/api/zones'),
+      axios.get('/api/shards'),
+      axios.get('/api/issues'),
+    ])
+    .then(
+      axios.spread((zonesRes, shardsRes, issuesRes) => {
+        dispatch({ type: FETCH_ZONES, payload: zonesRes.data });
+        dispatch({ type: FETCH_SHARDS, payload: shardsRes.data });
+        dispatch({ type: FETCH_ISSUES, payload: issuesRes.data });
+        dispatch({ type: LOADING_FINISHED });
+      })
+    );
 };
-
-/* Helpers */
-const arrayToMap = arr => arr.reduce((obj, item) => ({
-  ...obj,
-  [item.id]: item,
-}), {});
