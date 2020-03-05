@@ -1,6 +1,9 @@
 const Database = require('better-sqlite3');
 
-const db = Database('./db.sqlite3', { verbose: console.log });
+const db = Database(
+  './db.sqlite3'
+  // { verbose: console.log }
+);
 db.pragma('foreign_keys = ON');
 
 exports.db = db;
@@ -33,6 +36,8 @@ exports.init = () => {
         id INTEGER NOT NULL PRIMARY KEY,
         zone_id INTEGER NOT NULL,
         realm_id INTEGER NOT NULL,
+        selected INTEGER DEFAULT 1,
+        position INTEGER DEFAULT NULL,
         connected_to INTEGER DEFAULT NULL,
         FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE,
         FOREIGN KEY (realm_id) REFERENCES realms (id) ON DELETE CASCADE,
@@ -53,7 +58,7 @@ exports.init = () => {
   );
   stmts.push(
     db.prepare(
-      `CREATE TABLE IF NOT EXISTS shard_issues (
+      `CREATE TABLE IF NOT EXISTS shards_issues (
         id INTEGER NOT NULL PRIMARY KEY,
         shard_id INTEGER NOT NULL,
         issue_id INTEGER NOT NULL,

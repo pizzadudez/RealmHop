@@ -1,8 +1,8 @@
 const router = require('express').Router();
-// const RealmsRouter = require('./realms');
-// const IssuesRouter = require('./issues');
+const ShardsRouter = require('./shards');
+const ZonesRouter = require('./zones');
 
-// router.use('/realms', RealmsRouter);
-// router.use('/issues', IssuesRouter);
+router.use('/', ShardsRouter);
+router.use('/zones', ZonesRouter);
 
 module.exports = router;
