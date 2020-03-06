@@ -72,4 +72,13 @@ exports.init = () => {
     stmts.forEach(stmt => stmt.run());
   });
   createTables(stmts);
+
+  // default issue needed for other operations
+  db.prepare(
+    `INSERT OR IGNORE INTO issues
+    (name, description) VALUES(@name, @description)`
+  ).run({
+    name: 'connected',
+    description: 'Shard is currently connected with another.',
+  });
 };

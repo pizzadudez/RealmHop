@@ -1,14 +1,16 @@
 const db = require('./db').db;
 
 exports.getAll = () => {
-  const issues = db.prepare(`SELECT * FROM issues`).all();
-  return issues;
+  return db.prepare(`SELECT * FROM issues`).all();
 };
 
-exports.add = (shardId, issueId) => {
+exports.add = (shardId, { issue_id: issueId, connect = false }) => {
   const add = db.prepare(`INSERT INTO shards_issues
     (shard_id, issue_id, created_at)
-    VALUES (?, ?, ?)`);
-  const values = [shardId, issueId, new Date().toISOString()];
-  add.run(values);
+    VALUES (@shardId, @issueId, @timestamp)`);
+  add.run({
+    shardId,
+    issueId: connect ? 1 : issueId,
+    timestamp: new Date().toISOString(),
+  });
 };
