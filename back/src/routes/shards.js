@@ -15,7 +15,7 @@ router.post(
 );
 
 // connect, disconnect
-router.post('/shard/:id/connect', controller.connect);
+router.post('/shard/:id/connect', validate('connectShard'), controller.connect);
 router.delete('/shard/:id/disconnect', controller.disconnect);
 
 module.exports = router;

@@ -3,7 +3,11 @@ import styled from 'styled-components';
 import { createSelector } from 'reselect';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addIssue } from '../actions/shardActions';
+import {
+  addIssue,
+  connectShard,
+  disconnectShard,
+} from '../actions/shardActions';
 
 const stateSelector = createSelector(
   state => state.issues,
@@ -11,7 +15,7 @@ const stateSelector = createSelector(
   (issues, shardsById) => ({ issues, shardsById })
 );
 
-export default memo(({ shard, idx, connectShard }) => {
+export default memo(({ shard, idx, openConnectShard }) => {
   const dispatch = useDispatch();
   const { issues, shardsById } = useSelector(stateSelector);
 
@@ -23,13 +27,21 @@ export default memo(({ shard, idx, connectShard }) => {
       })
     );
   }, [dispatch, shard.id, idx, issues]);
-  const connect = useCallback(() => connectShard([shard.id, idx]), [
+  const connect = useCallback(() => openConnectShard([shard.id, idx]), [
     shard.id,
     idx,
   ]);
+  const deselectConnected = useCallback(
+    () => dispatch(connectShard(shard.id, shard.connected_to, idx)),
+    [dispatch, shard]
+  );
+  const disconnect = useCallback(
+    () => dispatch(disconnectShard(shard.id, shard.connected_to)),
+    [dispatch, shard]
+  );
 
   return (
-    <Container idx={idx}>
+    <Container idx={idx} connected={!!shard.connected_to}>
       <Slide>
         <span>{shard.realm.name}</span>
         {shard.connected_with && (
@@ -43,12 +55,22 @@ export default memo(({ shard, idx, connectShard }) => {
         )}
       </Slide>
       <Menu>
-        {issues.map(issue => (
-          <button key={issue.id} onClick={addIssueHandlers[issue.id]}>
-            {issue.name}
-          </button>
-        ))}
-        <button onClick={connect}>CONNECT</button>
+        {!shard.connected_to && (
+          <>
+            {issues.map(issue => (
+              <button key={issue.id} onClick={addIssueHandlers[issue.id]}>
+                {issue.name}
+              </button>
+            ))}
+            <button onClick={connect}>CONNECT</button>
+          </>
+        )}
+        {shard.connected_to && (
+          <>
+            <button onClick={deselectConnected}>DESELECT</button>
+            <button onClick={disconnect}>DISCONNECT</button>
+          </>
+        )}
       </Menu>
     </Container>
   );
@@ -71,7 +93,7 @@ const Container = styled.div`
   height: 44px;
   width: 260px;
   position: relative;
-  background: tomato;
+  background: ${props => (props.connected ? 'yellow' : 'tomato')};
   border: 1px solid black;
   &:hover ${Menu} {
     opacity: 1;

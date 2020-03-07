@@ -37,22 +37,24 @@ const stateSelector = createSelector(
 );
 
 const SortableSlide = SortableElement(props => <SelectedSlide {...props} />);
-const SortableList = SortableContainer(({ ids, shardsById, connectShard }) => (
-  <div style={{ display: 'flex', flexDirection: 'column' }}>
-    Selected
-    <div>
-      {ids.map((id, idx) => (
-        <SortableSlide
-          key={'sortable-slide-' + id}
-          index={idx}
-          idx={idx}
-          shard={shardsById[id]}
-          connectShard={connectShard}
-        />
-      ))}
+const SortableList = SortableContainer(
+  ({ ids, shardsById, openConnectShard }) => (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      Selected
+      <div>
+        {ids.map((id, idx) => (
+          <SortableSlide
+            key={'sortable-slide-' + id}
+            index={idx}
+            idx={idx}
+            shard={shardsById[id]}
+            openConnectShard={openConnectShard}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-));
+  )
+);
 
 export default memo(() => {
   const dispatch = useDispatch();
@@ -81,7 +83,7 @@ export default memo(() => {
       <SortableList
         ids={orderedIds}
         shardsById={shardsById}
-        connectShard={setConnectOpen}
+        openConnectShard={setConnectOpen}
         onSortEnd={onSortEnd}
       />
       {[{ name: 'connected' }, ...issues].map(

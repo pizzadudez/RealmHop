@@ -1,11 +1,18 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
 
 import { selectOne } from '../actions/shardActions';
 
+const stateSelector = createSelector(
+  state => state.shards.shardsById,
+  shardsById => ({ shardsById })
+);
+
 export default memo(({ shard, idx }) => {
   const dispatch = useDispatch();
+  const { shardsById } = useSelector(stateSelector);
 
   const selectHandler = useCallback(
     (insertLast = false) => () => {
@@ -16,7 +23,18 @@ export default memo(({ shard, idx }) => {
 
   return (
     <Container idx={idx}>
-      <Slide>{shard.realm.name}</Slide>
+      <Slide>
+        <span>{shard.realm.name}</span>
+        {shard.connected_with && (
+          <div style={{ fontSize: '0.75rem' }}>
+            {shard.connected_with.map(id => (
+              <span key={id} style={{ color: '#444', marginRight: 2 }}>
+                {shardsById[id].realm.name}
+              </span>
+            ))}
+          </div>
+        )}
+      </Slide>
       <Menu>
         <button onClick={selectHandler()}>Top</button>
         <button onClick={selectHandler(true)}>Bottom</button>

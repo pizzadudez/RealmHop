@@ -123,7 +123,8 @@ exports.updatePositions = ({ ordered_ids }) => {
     arr.forEach((id, idx) => update.run({ id, position: idx }))
   )(ordered_ids);
 };
-exports.connect = (id, { connect_to: parentId }) => {
+exports.connect = (id, { parent_id: parentId }) => {
+  console.log(id, parentId);
   db.prepare(
     `UPDATE shards SET selected=0, position=NULL,
     connected_to=@parentId 
