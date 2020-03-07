@@ -53,6 +53,40 @@ exports.getAll = () => {
 
   return shardsById;
 };
+exports.getOne = id => {
+  const shard = db
+    .prepare(
+      `SELECT id, selected, position, zone_id AS zone,
+      realm_id AS realm, connected_to FROM shards WHERE id=?`
+    )
+    .get(id);
+  const zone = db.prepare(`SELECT * from zones WHERE id=?`).get(shard.zone);
+  const realm = db.prepare(`SELECT * from realms WHERE id=?`).get(shard.realm);
+  const issues = db
+    .prepare(
+      `SELECT * FROM shards_issues si
+      LEFT JOIN issues i ON i.id = si.issue_id 
+      WHERE si.shard_id=?
+      ORDER BY created_at DESC`
+    )
+    .all(shard.id);
+  // Add issues
+  shard.issues = [];
+  issues.forEach(i =>
+    shard.issues.push({
+      id: i.id,
+      type: i.name,
+      description: i.description,
+      color: i.color,
+      created_at: i.created_at,
+    })
+  );
+  return {
+    ...shard,
+    realm,
+    zone,
+  };
+};
 // Select 1 or multiple shards
 exports.select = ({ shard_ids, insert_last = false }) => {
   const update = db.prepare(`UPDATE shards SET selected=1, 

@@ -13,9 +13,11 @@ exports.getAll = async (req, res, next) => {
 
 exports.addIssue = async (req, res, next) => {
   try {
-    IssueModel.add(req.params.id, req.body);
-    ShardModel.deselect(req.params.id);
-    res.sendStatus(200);
+    const shardId = req.params.id;
+    IssueModel.add(shardId, req.body);
+    ShardModel.deselect(shardId);
+    updatedShard = ShardModel.getOne(shardId);
+    res.status(200).json(updatedShard);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

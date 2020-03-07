@@ -11,7 +11,7 @@ router.post(
   validate('updatePositions'),
   controller.updatePositions
 );
-router.post('/shard/:id/issues', controller.addIssue);
+router.post('/shard/:id/issues', validate('addIssue'), controller.addIssue);
 
 // connect, disconnect
 router.post('/shard/:id/connect', controller.connect);

@@ -1,7 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import styled from 'styled-components';
 import { createSelector } from 'reselect';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { addIssue } from '../actions/shardActions';
 
 const stateSelector = createSelector(
   state => state.issues,
@@ -12,12 +14,23 @@ export default memo(({ shard }) => {
   const dispatch = useDispatch();
   const { issues } = useSelector(stateSelector);
 
+  const addIssueHandlers = useMemo(() => {
+    return Object.fromEntries(
+      issues.map(issue => {
+        const callback = () => dispatch(addIssue(shard.id, issue.id));
+        return [issue.id, callback];
+      })
+    );
+  }, [dispatch, shard.id, issues]);
+
   return (
     <Container>
       <Slide>{shard.realm.name}</Slide>
       <Menu>
         {issues.map(issue => (
-          <button key={issue.id}>{issue.name}</button>
+          <button key={issue.id} onClick={addIssueHandlers[issue.id]}>
+            {issue.name}
+          </button>
         ))}
       </Menu>
     </Container>

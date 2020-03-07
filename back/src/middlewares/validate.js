@@ -13,6 +13,9 @@ const validate = field => {
         .items(Joi.number())
         .required(),
     }),
+    addIssue: Joi.object().keys({
+      issue_id: Joi.number().required(),
+    }),
     connectShard: Joi.object().keys({
       parent_id: Joi.number().required(),
     }),
