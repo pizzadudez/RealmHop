@@ -1,8 +1,9 @@
 import axios from 'axios';
 import {
+  FETCH_SHARDS,
   SHARD_UPDATED,
   SHARD_CONNECTED,
-  FETCH_SHARDS,
+  SHARD_DISCONNECTED,
   SHARDS_SORTED,
   SHARD_DESELECTED,
   SHARDS_SELECTED,
@@ -16,10 +17,17 @@ export const addIssue = (shardId, issueId, index) => dispatch => {
       dispatch({ type: SHARD_UPDATED, payload: res.data });
     });
 };
-export const connectShard = (id, parentId) => dispatch => {
+export const connectShard = (id, parentId, index) => dispatch => {
   axios.post(`/api/shard/${id}/connect`, { panret_id: parentId }).then(res => {
     dispatch({ type: SHARD_UPDATED, payload: res.data });
+    dispatch({ type: SHARD_DESELECTED, index });
     dispatch({ type: SHARD_CONNECTED, id, parentId });
+  });
+};
+export const disconnectShard = (id, parentId) => dispatch => {
+  axios.delete(`/api/shard/${id}/disconnect`).then(res => {
+    dispatch({ tyoe: SHARD_UPDATED, payload: res.data });
+    dispatch({ type: SHARD_DISCONNECTED, id, parentId });
   });
 };
 

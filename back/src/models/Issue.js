@@ -1,7 +1,7 @@
 const db = require('./db').db;
 
 exports.getAll = () => {
-  return db.prepare(`SELECT * FROM issues`).all();
+  return db.prepare(`SELECT * FROM issues WHERE id!=1`).all();
 };
 
 exports.add = (shardId, { issue_id: issueId, connect = false }) => {

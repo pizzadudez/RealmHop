@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { createSelector } from 'reselect';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,12 +7,13 @@ import { addIssue } from '../actions/shardActions';
 
 const stateSelector = createSelector(
   state => state.issues,
-  issues => ({ issues })
+  state => state.shards.shardsById,
+  (issues, shardsById) => ({ issues, shardsById })
 );
 
-export default memo(({ shard, idx }) => {
+export default memo(({ shard, idx, connectShard }) => {
   const dispatch = useDispatch();
-  const { issues } = useSelector(stateSelector);
+  const { issues, shardsById } = useSelector(stateSelector);
 
   const addIssueHandlers = useMemo(() => {
     return Object.fromEntries(
@@ -22,34 +23,53 @@ export default memo(({ shard, idx }) => {
       })
     );
   }, [dispatch, shard.id, idx, issues]);
+  const connect = useCallback(() => connectShard([shard.id, idx]), [
+    shard.id,
+    idx,
+  ]);
 
   return (
     <Container idx={idx}>
-      <Slide>{shard.realm.name}</Slide>
+      <Slide>
+        <span>{shard.realm.name}</span>
+        {shard.connected_with && (
+          <div style={{ fontSize: '0.75rem' }}>
+            {shard.connected_with.map(id => (
+              <span key={id} style={{ color: '#444', marginRight: 2 }}>
+                {shardsById[id].realm.name}
+              </span>
+            ))}
+          </div>
+        )}
+      </Slide>
       <Menu>
         {issues.map(issue => (
           <button key={issue.id} onClick={addIssueHandlers[issue.id]}>
             {issue.name}
           </button>
         ))}
+        <button onClick={connect}>CONNECT</button>
       </Menu>
     </Container>
   );
 });
 
 const Menu = styled.div`
+  width: 100%;
+  position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
   opacity: 0;
-  position: absolute;
-  z-index: 2;
+  z-index: 3;
   background: palevioletred;
+  display: flex;
+  flex-wrap: wrap;
 `;
 const Container = styled.div`
-  height: 38px;
-  width: 180px;
+  height: 44px;
+  width: 260px;
   position: relative;
   background: tomato;
   border: 1px solid black;

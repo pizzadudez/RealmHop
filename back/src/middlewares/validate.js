@@ -8,6 +8,9 @@ const validate = field => {
         .required(),
       insert_last: Joi.boolean(),
     }),
+    selectShard: Joi.object().keys({
+      insert_last: Joi.boolean(),
+    }),
     updatePositions: Joi.object().keys({
       ordered_ids: Joi.array()
         .items(Joi.number())

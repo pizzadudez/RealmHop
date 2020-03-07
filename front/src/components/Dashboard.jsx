@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -8,6 +8,7 @@ import arrayMove from 'array-move';
 import { sortShards, selectMany } from '../actions/shardActions';
 import SelectedSlide from './SelectedSlide';
 import DeselectedSlide from './DeselectedSlide';
+import ConnectModal from './ConnectModal';
 
 const stateSelector = createSelector(
   state => state.issues,
@@ -35,10 +36,8 @@ const stateSelector = createSelector(
   }
 );
 
-const SortableSlide = SortableElement(({ shard, idx }) => (
-  <SelectedSlide shard={shard} idx={idx} />
-));
-const SortableList = SortableContainer(({ shardsById, ids }) => (
+const SortableSlide = SortableElement(props => <SelectedSlide {...props} />);
+const SortableList = SortableContainer(({ ids, shardsById, connectShard }) => (
   <div style={{ display: 'flex', flexDirection: 'column' }}>
     Selected
     <div>
@@ -48,6 +47,7 @@ const SortableList = SortableContainer(({ shardsById, ids }) => (
           index={idx}
           idx={idx}
           shard={shardsById[id]}
+          connectShard={connectShard}
         />
       ))}
     </div>
@@ -60,6 +60,7 @@ export default memo(() => {
     stateSelector
   );
 
+  const [connectOpen, setConnectOpen] = useState([]); // [id, idx] (shard)
   const onSortEnd = useCallback(
     ({ oldIndex, newIndex }) => {
       const newOrder = arrayMove(orderedIds, oldIndex, newIndex);
@@ -67,7 +68,6 @@ export default memo(() => {
     },
     [dispatch, orderedIds]
   );
-
   const selectCategory = useCallback(
     category => () => {
       dispatch(selectMany(unselected[category]));
@@ -77,12 +77,14 @@ export default memo(() => {
 
   return (
     <Container>
+      <ConnectModal open={connectOpen} setOpen={setConnectOpen} />
       <SortableList
-        shardsById={shardsById}
         ids={orderedIds}
+        shardsById={shardsById}
+        connectShard={setConnectOpen}
         onSortEnd={onSortEnd}
       />
-      {issues.map(
+      {[{ name: 'connected' }, ...issues].map(
         issue =>
           unselected[issue.name] && (
             <div key={issue.name}>

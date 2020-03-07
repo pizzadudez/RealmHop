@@ -120,12 +120,13 @@ exports.updatePositions = ({ ordered_ids }) => {
     WHERE id=@id`);
 
   db.transaction(arr =>
-    arr.forEach((id, idx) => update.run({ id, position: idx + 1000 }))
+    arr.forEach((id, idx) => update.run({ id, position: idx }))
   )(ordered_ids);
 };
 exports.connect = (id, { connect_to: parentId }) => {
   db.prepare(
-    `UPDATE shards SET connected_to=@parentId 
+    `UPDATE shards SET selected=0, position=NULL,
+    connected_to=@parentId 
     WHERE id=@id`
   ).run({ id, parentId });
 };

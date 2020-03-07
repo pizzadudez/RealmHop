@@ -34,6 +34,9 @@ const Menu = styled.div`
   position: absolute;
   z-index: 2;
   background: greenyellow;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
 `;
 const Container = styled.div`
   height: 38px;
