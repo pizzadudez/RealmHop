@@ -15,8 +15,12 @@ export const fetchData = () => dispatch => {
     ])
     .then(
       axios.spread((zonesRes, shardsRes, issuesRes) => {
+        dispatch({
+          type: FETCH_SHARDS,
+          payload: shardsRes.data,
+          initialFetch: true,
+        });
         dispatch({ type: FETCH_ZONES, payload: zonesRes.data });
-        dispatch({ type: FETCH_SHARDS, payload: shardsRes.data });
         dispatch({ type: FETCH_ISSUES, payload: issuesRes.data });
         dispatch({ type: LOADING_FINISHED });
       })

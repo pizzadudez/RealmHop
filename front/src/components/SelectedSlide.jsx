@@ -10,21 +10,21 @@ const stateSelector = createSelector(
   issues => ({ issues })
 );
 
-export default memo(({ shard }) => {
+export default memo(({ shard, idx }) => {
   const dispatch = useDispatch();
   const { issues } = useSelector(stateSelector);
 
   const addIssueHandlers = useMemo(() => {
     return Object.fromEntries(
       issues.map(issue => {
-        const callback = () => dispatch(addIssue(shard.id, issue.id));
+        const callback = () => dispatch(addIssue(shard.id, issue.id, idx));
         return [issue.id, callback];
       })
     );
-  }, [dispatch, shard.id, issues]);
+  }, [dispatch, shard.id, idx, issues]);
 
   return (
-    <Container>
+    <Container idx={idx}>
       <Slide>{shard.realm.name}</Slide>
       <Menu>
         {issues.map(issue => (
@@ -56,5 +56,6 @@ const Container = styled.div`
   &:hover ${Menu} {
     opacity: 1;
   }
+  margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
 `;
 const Slide = styled.div``;

@@ -6,7 +6,7 @@ import issuesReducer from './issuesReducer';
 
 export default combineReducers({
   app: appReducer,
-  shardsById: shardsReducer,
+  shards: shardsReducer,
   zones: zonesReducer,
   issues: issuesReducer,
 });

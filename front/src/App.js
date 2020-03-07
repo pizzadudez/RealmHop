@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 
 import { fetchData } from './actions/dataActions';
 import Dashboard from './components/Dashboard';
+import Toolbar from './components/Toolbar';
 
 const stateSelector = createSelector(
   state => state.app.loadingData,
@@ -23,7 +24,7 @@ export default memo(() => {
     <>
       {!loadingData && (
         <Page>
-          <div style={{ background: '#222' }}>Navbar</div>
+          <Toolbar />
           <Dashboard />
           <div style={{ background: '#222' }}>Footer</div>
         </Page>

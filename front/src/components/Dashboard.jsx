@@ -1,18 +1,18 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 
-import RealmSlide from './RealmSlide';
+import { sortShards, selectMany } from '../actions/shardActions';
+import SelectedSlide from './SelectedSlide';
+import DeselectedSlide from './DeselectedSlide';
 
 const stateSelector = createSelector(
   state => state.issues,
-  state => state.shardsById,
-  (issues, shardsById) => {
-    const selected = Object.values(shardsById)
-      .filter(shard => shard.selected)
-      .sort((a, b) => b.position - a.position)
-      .map(shard => shard.id);
+  state => state.shards,
+  (issues, { shardsById, orderedIds }) => {
     const unselected = Object.values(shardsById)
       .filter(shard => !shard.selected)
       .sort(
@@ -29,34 +29,71 @@ const stateSelector = createSelector(
     return {
       issues,
       shardsById,
-      selected,
+      orderedIds,
       unselected,
     };
   }
 );
 
+const SortableSlide = SortableElement(({ shard, idx }) => (
+  <SelectedSlide shard={shard} idx={idx} />
+));
+const SortableList = SortableContainer(({ shardsById, ids }) => (
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
+    Selected
+    <div>
+      {ids.map((id, idx) => (
+        <SortableSlide
+          key={'sortable-slide-' + id}
+          index={idx}
+          idx={idx}
+          shard={shardsById[id]}
+        />
+      ))}
+    </div>
+  </div>
+));
+
 export default memo(() => {
   const dispatch = useDispatch();
-  const { issues, shardsById, selected, unselected } = useSelector(
+  const { issues, shardsById, orderedIds, unselected } = useSelector(
     stateSelector
+  );
+
+  const onSortEnd = useCallback(
+    ({ oldIndex, newIndex }) => {
+      const newOrder = arrayMove(orderedIds, oldIndex, newIndex);
+      dispatch(sortShards(newOrder));
+    },
+    [dispatch, orderedIds]
+  );
+
+  const selectCategory = useCallback(
+    category => () => {
+      dispatch(selectMany(unselected[category]));
+    },
+    [dispatch, unselected]
   );
 
   return (
     <Container>
-      <div>
-        Selected
-        {selected.map(id => (
-          <RealmSlide key={id} shard={shardsById[id]} />
-        ))}
-      </div>
-      {issues.map(issue => (
-        <div key={issue.name}>
-          {issue.name}
-          {unselected[issue.name].map(id => (
-            <RealmSlide key={id} shard={shardsById[id]} />
-          ))}
-        </div>
-      ))}
+      <SortableList
+        shardsById={shardsById}
+        ids={orderedIds}
+        onSortEnd={onSortEnd}
+      />
+      {issues.map(
+        issue =>
+          unselected[issue.name] && (
+            <div key={issue.name}>
+              {issue.name}
+              <button onClick={selectCategory(issue.name)}>Select All</button>
+              {unselected[issue.name].map(id => (
+                <DeselectedSlide key={id} shard={shardsById[id]} />
+              ))}
+            </div>
+          )
+      )}
     </Container>
   );
 });
