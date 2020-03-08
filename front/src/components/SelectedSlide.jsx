@@ -90,7 +90,7 @@ const Menu = styled.div`
   flex-wrap: wrap;
 `;
 const Container = styled.div`
-  height: 44px;
+  height: 50px;
   width: 260px;
   position: relative;
   background: ${props => (props.connected ? 'yellow' : 'tomato')};
@@ -100,4 +100,12 @@ const Container = styled.div`
   }
   margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
 `;
-const Slide = styled.div``;
+const Slide = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  > span {
+    font-size: 1.5rem;
+    margin: 0 3px;
+  }
+`;

@@ -58,8 +58,7 @@ export default (state = initialState, action) => {
       const { id: childId, parentId } = action;
       const parent = { ...state.shardsById[parentId] };
       parent.connected_with = [
-        ...(parent.connected_with &&
-          parent.connected_with.filter(id => id !== childId)),
+        ...(parent.connected_with || []).filter(id => id !== childId),
         childId,
       ];
 

@@ -18,7 +18,7 @@ const stateSelector = createSelector(
       .filter(shard => !shard.selected)
       .sort(
         (a, b) =>
-          new Date(b.issues[0].created_at) - new Date(a.issues[0].created_at)
+          new Date(a.issues[0].created_at) - new Date(b.issues[0].created_at)
       )
       .reduce((obj, shard) => {
         const issueType = shard.issues[0].type;
@@ -80,29 +80,47 @@ export default memo(() => {
   return (
     <Container>
       <ConnectModal open={connectOpen} setOpen={setConnectOpen} />
-      <SortableList
-        ids={orderedIds}
-        shardsById={shardsById}
-        openConnectShard={setConnectOpen}
-        onSortEnd={onSortEnd}
-      />
-      {[{ name: 'connected' }, ...issues].map(
-        issue =>
-          unselected[issue.name] && (
-            <div key={issue.name}>
-              {issue.name}
-              <button onClick={selectCategory(issue.name)}>Select All</button>
-              {unselected[issue.name].map(id => (
-                <DeselectedSlide key={id} shard={shardsById[id]} />
-              ))}
-            </div>
-          )
-      )}
+      <div style={{ minHeight: 0, overflow: 'auto' }}>
+        <SortableList
+          ids={orderedIds}
+          shardsById={shardsById}
+          openConnectShard={setConnectOpen}
+          onSortEnd={onSortEnd}
+        />
+      </div>
+      <Issues>
+        {[{ name: 'connected' }, ...issues].map(
+          issue =>
+            unselected[issue.name] && (
+              <IssueList key={issue.name}>
+                <button onClick={selectCategory(issue.name)}>Select All</button>
+                <span>{issue.name}</span>
+                {unselected[issue.name].map(id => (
+                  <DeselectedSlide key={id} shard={shardsById[id]} />
+                ))}
+              </IssueList>
+            )
+        )}
+      </Issues>
     </Container>
   );
 });
 
 const Container = styled.div`
-  display: flex;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+`;
+const Issues = styled.div`
   overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+`;
+const IssueList = styled.div`
+  min-height: 0;
+  > span {
+    color: white;
+    font-size: 1.3rem;
+    margin-left: 3px;
+  }
 `;

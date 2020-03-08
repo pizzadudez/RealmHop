@@ -62,6 +62,10 @@ exports.getOne = id => {
     .get(id);
   const zone = db.prepare(`SELECT * from zones WHERE id=?`).get(shard.zone);
   const realm = db.prepare(`SELECT * from realms WHERE id=?`).get(shard.realm);
+  const connectedWith = db
+    .prepare(`SELECT id from shards WHERE connected_to=?`)
+    .pluck()
+    .all(id);
   const issues = db
     .prepare(
       `SELECT * FROM shards_issues si
@@ -85,6 +89,7 @@ exports.getOne = id => {
     ...shard,
     realm,
     zone,
+    ...(connectedWith.length && { connected_with: connectedWith }),
   };
 };
 // Select 1 or multiple shards
