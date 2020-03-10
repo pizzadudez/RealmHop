@@ -7,7 +7,7 @@ dirname = os.path.dirname(__file__)
 REALMPOP = os.path.join(dirname, 'input/realmpop.txt')
 # table from: https://worldofwarcraft.com/en-us/game/status/eu
 REALMSTATUS = os.path.join(dirname, 'input/realmstatus.txt')
-OUTPUT = os.path.join(dirname, 'output/connected_realms.json')
+OUTPUT = os.path.join(dirname, 'output/merged_realms.json')
 NAME_FIX = {"Aman'Thul": "Aman'thul", "Cho'gall": "Cho’gall"}
 
 

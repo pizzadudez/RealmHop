@@ -42,7 +42,7 @@ export default memo(({ open, setOpen }) => {
     <StyledDialog open={!!id} onClose={close}>
       {connectList.map(shard => (
         <button key={'connect-option-' + shard.id} onClick={connect(shard.id)}>
-          {shard.realm.name}
+          {`[${shard.realm.name}] - ${shard.realm.merged_realms}`}
         </button>
       ))}
     </StyledDialog>
@@ -57,5 +57,9 @@ const StyledDialog = styled(Dialog)`
     min-height: 700px;
     padding: 8px 10px;
     color: white;
+  }
+
+  > button {
+    font-size: 1.5rem;
   }
 `;

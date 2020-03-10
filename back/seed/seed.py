@@ -3,7 +3,7 @@ import json
 import sqlite3
 
 dirname = os.path.dirname(__file__)
-REALMS = os.path.join(dirname, 'output/connected_realms.json')
+REALMS = os.path.join(dirname, 'output/merged_realms.json')
 HOP_DB = os.path.join(dirname, 'input/char_db.db')
 DB = os.path.join(dirname, '..', 'db.sqlite3')
 
@@ -23,7 +23,7 @@ def seed_realms():
             realm['rp']
         )
         c.execute("""INSERT OR IGNORE INTO realms (
-            name, connected_realms, region, population, roleplay)
+            name, merged_realms, region, population, roleplay)
             VALUES (?, ?, ?, ?, ?)""", data)
 
     conn.commit()

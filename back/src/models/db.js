@@ -12,21 +12,35 @@ exports.init = () => {
   const stmts = [];
   stmts.push(
     db.prepare(
-      `CREATE TABLE IF NOT EXISTS realms (
+      `CREATE TABLE IF NOT EXISTS zones (
         id INTEGER NOT NULL PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
-        connected_realms TEXT,
-        region TEXT NOT NULL,
-        population TEXT,
-        roleplay INTEGER DEFAULT 0
+        name TEXT NOT NULL UNIQUE
       )`
     )
   );
   stmts.push(
     db.prepare(
-      `CREATE TABLE IF NOT EXISTS zones (
+      `CREATE TABLE IF NOT EXISTS realms (
         id INTEGER NOT NULL PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE
+        name TEXT NOT NULL UNIQUE,
+        merged_realms TEXT,
+        region TEXT NOT NULL,
+        population TEXT,
+        roleplay INTEGER DEFAULT 0,
+        group_id INTEGER DEFAULT NULL
+      )`
+    )
+  );
+  stmts.push(
+    db.prepare(
+      `CREATE TABLE IF NOT EXISTS realm_connections (
+        id INTEGER NOT NULL PRIMARY KEY,
+        first INTEGER NOT NULL,
+        second INTEGER NOT NULL,
+        created_at TEXT,
+        FOREIGN KEY (first) REFERENCES realms (id) ON DELETE CASCADE, 
+        FOREIGN KEY (second) REFERENCES realms (id) ON DELETE CASCADE,
+        UNIQUE(first, second)
       )`
     )
   );
@@ -38,10 +52,12 @@ exports.init = () => {
         realm_id INTEGER NOT NULL,
         selected INTEGER DEFAULT 1,
         position INTEGER DEFAULT NULL,
+        score INTEGER DEFAULT 0,
+        inactive INTEGER DEFAULT 0,
         connected_to INTEGER DEFAULT NULL,
         FOREIGN KEY (zone_id) REFERENCES zones (id) ON DELETE CASCADE,
         FOREIGN KEY (realm_id) REFERENCES realms (id) ON DELETE CASCADE,
-        FOREIGN KEY (connected_to) REFERENCES shards (id)
+        FOREIGN KEY (connected_to) REFERENCES shards (id),
         UNIQUE(zone_id, realm_id)
       )`
     )

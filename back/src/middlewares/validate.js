@@ -2,6 +2,7 @@ const Joi = require('@hapi/joi');
 
 const validate = field => {
   const schema = {
+    // Shards
     selectShards: Joi.object().keys({
       shard_ids: Joi.array()
         .items(Joi.number())
@@ -21,6 +22,11 @@ const validate = field => {
     }),
     connectShard: Joi.object().keys({
       parent_id: Joi.number().required(),
+    }),
+    // Realms
+    realmConnection: Joi.object().keys({
+      first: Joi.number().required(),
+      second: Joi.number().required(),
     }),
   };
 

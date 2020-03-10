@@ -106,9 +106,9 @@ exports.select = ({ shard_ids, insert_last = false }) => {
     ? position + 1
     : position - shard_ids.length;
 
-  shard_ids.forEach((id, idx) =>
-    update.run({ id, position: idx + startPosition })
-  );
+  db.transaction(arr =>
+    arr.forEach((id, idx) => update.run({ id, position: idx + startPosition }))
+  )(shard_ids);
 };
 // Deselect 1 shard (along with adding issue)
 exports.deselect = id => {
@@ -129,7 +129,6 @@ exports.updatePositions = ({ ordered_ids }) => {
   )(ordered_ids);
 };
 exports.connect = (id, { parent_id: parentId }) => {
-  console.log(id, parentId);
   db.prepare(
     `UPDATE shards SET selected=0, position=NULL,
     connected_to=@parentId 
