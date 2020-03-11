@@ -1,11 +1,31 @@
 const db = require('./db').db;
 
-// exports.getAll
-
+exports.getAll = () => {
+  const realms = db.prepare(`SELECT * FROM realms`).all();
+  return Object.fromEntries(realms.map(realm => [realm.id, realm]));
+};
+exports.getGroups = () => {
+  const groups = db
+    .prepare(
+      `SELECT DISTINCT group_id AS id, 
+    group_concat(id) OVER(
+      PARTITION BY group_id
+      ROWS BETWEEN UNBOUNDED PRECEDING 
+      AND UNBOUNDED FOLLOWING
+    ) AS realm_ids
+    FROM realms WHERE group_id NOT NULL`
+    )
+    .all();
+  return Object.fromEntries(
+    groups.map(group => {
+      const realmIds = group.realm_ids.split(',').map(Number);
+      return [group.id, realmIds];
+    })
+  );
+};
 exports.getOne = id => {
   return db.prepare(`SELECT * FROM realms WHERE id=?`).get(id);
 };
-
 exports.connect = ({ first, second }) => {
   const createConnection = db.prepare(
     `INSERT OR IGNORE INTO realm_connections
@@ -32,7 +52,6 @@ exports.connect = ({ first, second }) => {
   }
   updateGroupIds(realmIds, groupId);
 };
-
 // Remove realm from it's realm_group
 exports.disconnect = id => {
   db.prepare(

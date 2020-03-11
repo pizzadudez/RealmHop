@@ -16,21 +16,25 @@ export default memo(({ open, setOpen }) => {
   const { shardsById } = useSelector(stateSelector);
   const [id, idx] = open;
 
-  const connectList = useMemo(() => {
-    if (id) {
-      const selected = shardsById[id];
-      return Object.values(shardsById).filter(
-        shard =>
-          shard.id !== selected.id &&
-          shard.realm.region === selected.realm.region &&
-          shard.realm.roleplay === selected.realm.roleplay &&
-          !shard.connected_to
-      );
-    }
-    return [];
-  }, [id, shardsById]);
+  // const connectList = useMemo(() => {
+  //   if (id) {
+  //     const selected = shardsById[id];
+  //     return;
+  //     return Object.values(shardsById).filter(
+  //       shard =>
+  //         shard.id !== selected.id &&
+  //         shard.realm.region === selected.realm.region &&
+  //         shard.realm.roleplay === selected.realm.roleplay &&
+  //         !shard.connected_to
+  //     );
+  //   }
+  //   return [];
+  // }, [id, shardsById]);
   const connect = useCallback(
-    parentId => () => dispatch(connectShard(id, parentId, idx)),
+    parentId => () => {
+      dispatch(connectShard(id, parentId, idx));
+      setOpen([]);
+    },
     [id]
   );
 
@@ -40,11 +44,12 @@ export default memo(({ open, setOpen }) => {
 
   return (
     <StyledDialog open={!!id} onClose={close}>
-      {connectList.map(shard => (
-        <button key={'connect-option-' + shard.id} onClick={connect(shard.id)}>
-          {`[${shard.realm.name}] - ${shard.realm.merged_realms}`}
-        </button>
-      ))}
+      {id &&
+        shardsById[id].group.map(id => (
+          <button key={'connect-option-' + id} onClick={connect(id)}>
+            {`[${shardsById[id].realm.name}] - ${shardsById[id].realm.merged_realms}`}
+          </button>
+        ))}
     </StyledDialog>
   );
 });

@@ -62,7 +62,7 @@ export default memo(({ shard, idx, openConnectShard }) => {
                 {issue.name}
               </button>
             ))}
-            <button onClick={connect}>CONNECT</button>
+            {shard.group && <button onClick={connect}>CONNECT</button>}
           </>
         )}
         {shard.connected_to && (

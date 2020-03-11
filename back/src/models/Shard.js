@@ -5,6 +5,7 @@ exports.getAll = () => {
   const zonesById = Object.fromEntries(zones.map(z => [z.id, z]));
   const realms = db.prepare(`SELECT * from realms`).all();
   const realmsById = Object.fromEntries(realms.map(r => [r.id, r]));
+  const shardGroupsById = getShardGroups();
 
   const shards = db
     .prepare(
@@ -20,6 +21,9 @@ exports.getAll = () => {
         zone: zonesById[s.zone],
         realm: realmsById[s.realm],
         issues: [],
+        ...(realmsById[s.realm].group_id && {
+          group: shardGroupsById[realmsById[s.realm].group_id],
+        }),
       },
     ])
   );
@@ -50,6 +54,7 @@ exports.getAll = () => {
       created_at: i.created_at,
     })
   );
+  // Add
 
   return shardsById;
 };
@@ -137,4 +142,25 @@ exports.connect = (id, { parent_id: parentId }) => {
 };
 exports.disconnect = id => {
   db.prepare(`UPDATE shards SET connected_to=NULL WHERE id=?`).run(id);
+};
+
+// Helpers
+const getShardGroups = () => {
+  const groups = db
+    .prepare(
+      `SELECT DISTINCT r.group_id AS id,
+    group_concat(s.id) OVER (
+      PARTITION BY r.group_id
+    ) AS shard_ids
+    FROM shards s 
+    LEFT JOIN realms r ON r.id = s.realm_id
+    WHERE group_id NOT NULL`
+    )
+    .all();
+  return Object.fromEntries(
+    groups.map(group => {
+      const shardIds = group.shard_ids.split(',').map(Number);
+      return [group.id, shardIds];
+    })
+  );
 };

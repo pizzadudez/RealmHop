@@ -2,10 +2,12 @@ import React, { memo, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { fetchData } from './actions/dataActions';
-import Dashboard from './components/Dashboard';
 import Toolbar from './components/Toolbar';
+import Dashboard from './components/Dashboard';
+import RealmConnections from './components/RealmConnections';
 
 const stateSelector = createSelector(
   state => state.app.loadingData,
@@ -24,9 +26,18 @@ export default memo(() => {
     <>
       {!loadingData && (
         <Page>
-          <Toolbar />
-          <Dashboard />
-          <div style={{ background: '#222' }}>Footer</div>
+          <Router>
+            <Toolbar />
+            <Switch>
+              <Route path="/realms">
+                <RealmConnections />
+              </Route>
+              <Router path="/">
+                <Dashboard />
+              </Router>
+            </Switch>
+            <div style={{ background: '#222' }}>Footer</div>
+          </Router>
         </Page>
       )}
       {loadingData && <div>Loading</div>}

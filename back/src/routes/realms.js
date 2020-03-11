@@ -5,7 +5,7 @@ const validate = require('../middlewares/validate');
 // get realms
 router.get('/realms', controller.getAll);
 // get groups ????
-
+router.get('/realms/groups', controller.getGroups);
 // Create connection between two realms
 router.post(
   '/realms/connections',
