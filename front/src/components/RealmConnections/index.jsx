@@ -22,11 +22,15 @@ export default memo(() => {
   // Select
   const [leftSelected, setLeftSelected] = useState(null);
   const [rightSelected, setRightSelected] = useState(null);
+
   const selectLeft = useCallback(e => {
-    setLeftSelected(e.target.value);
+    setLeftSelected(parseInt(e.target.value));
     setRightSelected(null);
   }, []);
-  const selectRight = useCallback(e => setRightSelected(e.target.value), []);
+  const selectRight = useCallback(
+    e => setRightSelected(parseInt(e.target.value)),
+    []
+  );
 
   // Filter
   const [leftFilter, setLeftFilter] = useState('');
@@ -110,15 +114,13 @@ export default memo(() => {
           ))}
         </List>
       </RealmColumn>
-      <div>
-        <span style={{ color: 'white', fontSize: '1.4rem' }}>
-          {leftSelected && realmsById[leftSelected].name}
-        </span>
-        <button onClick={connect}>Connect</button>
-        <span style={{ color: 'pink', fontSize: '1.4rem' }}>
-          {rightSelected && realmsById[rightSelected].name}
-        </span>
-      </div>
+      <SelectedActions>
+        <span>{leftSelected && realmsById[leftSelected].name}</span>
+        {leftSelected && rightSelected && (
+          <button onClick={connect}>Connect</button>
+        )}
+        <span>{rightSelected && realmsById[rightSelected].name}</span>
+      </SelectedActions>
       <Groups>
         {Object.entries(groupsById).map(([groupId, realmIds]) => (
           <React.Fragment key={'group_' + groupId}>
@@ -158,6 +160,14 @@ const List = styled.div`
   flex-direction: column;
   overflow: auto;
   padding-right: 18px;
+`;
+const SelectedActions = styled.div`
+  color: white;
+  font-size: 1.4rem;
+  button {
+    width: 80px;
+    height: 30px;
+  }
 `;
 const Groups = styled.div`
   min-width: 300px;
