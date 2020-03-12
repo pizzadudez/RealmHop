@@ -1,6 +1,8 @@
 export const FETCH_ZONES = 'FETCH_ZONES';
-export const FETCH_SHARDS = 'FETCH_SHARDS';
 export const FETCH_ISSUES = 'FETCH_ISSUES';
+export const FETCH_SHARDS = 'FETCH_SHARDS';
+export const FETCH_REALMS = 'FETCH_REALMS';
+export const FETCH_GROUPS = 'FETCH_GROUPS';
 export const LOADING_FINISHED = 'LOADING_FINISHED';
 
 export const SHARD_UPDATED = 'SHARD_UPDATED';

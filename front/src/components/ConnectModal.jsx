@@ -50,6 +50,7 @@ export default memo(({ open, setOpen }) => {
             {`[${shardsById[id].realm.name}] - ${shardsById[id].realm.merged_realms}`}
           </button>
         ))}
+      {!id && <div></div>}
     </StyledDialog>
   );
 });
