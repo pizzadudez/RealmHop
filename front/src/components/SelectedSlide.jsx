@@ -12,7 +12,9 @@ import {
 import Button from './common/Button';
 
 const DragHandle = SortableHandle(() => (
-  <div style={{ background: 'grey', alignItems: 'center' }}>
+  <div
+    style={{ background: 'grey', alignItems: 'center', cursor: 'row-resize' }}
+  >
     <span>||</span>
   </div>
 ));
@@ -51,8 +53,9 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
   return (
     <Container idx={idx} connected={!!shard.connected_to}>
       <Slide expand={!disableExpand}>
-        <span>{shard.realm.name}</span>
-        {shard.connected_with && (
+        <Title>
+          <span>{shard.realm.name}</span>
+          {/* {shard.connected_with && (
           <div style={{ fontSize: '0.75rem' }}>
             {shard.connected_with.map(id => (
               <span key={id} style={{ color: '#444', marginRight: 2 }}>
@@ -60,27 +63,47 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
               </span>
             ))}
           </div>
-        )}
+        )} */}
+        </Title>
+        <ExpandedMenu>
+          <div style={{ height: 100, background: 'green' }}>lol</div>
+          {idx % 2 === 0 && (
+            <div style={{ height: 100, background: 'red' }}>lol</div>
+          )}
+        </ExpandedMenu>
       </Slide>
       <DragHandle />
     </Container>
   );
 });
 
+const Title = styled.div`
+  font-size: 1.5rem;
+  margin: 0 3px;
+`;
+const ExpandedMenu = styled.div`
+  height: 0;
+  opacity: 0;
+  display: none;
+  transition: all 1.25s ease-in-out;
+  background: darkgrey;
+`;
 const Slide = styled.div`
-  height: 50px;
-  transition: height 0.15s ease-in-out;
+  max-height: 46px;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
   &:hover {
-    height: ${props => (props.expand ? '150px' : undefined)};
+    max-height: ${props => (props.expand ? '400px' : undefined)};
+    > ${ExpandedMenu} {
+      height: auto;
+      opacity: 1;
+      display: flex;
+      flex-direction: column;
+    }
   }
-
   background: ${props => (props.expand ? 'yellow' : 'tomato')};
   display: flex;
   flex-direction: column;
-  > span {
-    font-size: 1.5rem;
-    margin: 0 3px;
-  }
 `;
 
 const Container = styled.div`
