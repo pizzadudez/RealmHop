@@ -12,12 +12,23 @@ import SearchField from '../common/SearchField';
 
 const stateSelector = createSelector(
   state => state.realms,
-  ({ realmsById, groupsById }) => ({ realmsById, groupsById })
+  ({ realmsById, groupsById }) => {
+    const withoutGroupIds = Object.values(realmsById)
+      .filter(realm => !realm.group_id)
+      .reduce((obj, realm) => {
+        obj[realm.region] = obj[realm.region] || [];
+        obj[realm.region].push(realm.id);
+        return obj;
+      }, {});
+    return { realmsById, groupsById, withoutGroupIds };
+  }
 );
 
 export default memo(() => {
   const dispatch = useDispatch();
-  const { realmsById, groupsById } = useSelector(stateSelector);
+  const { realmsById, groupsById, withoutGroupIds } = useSelector(
+    stateSelector
+  );
 
   // Select
   const [leftSelected, setLeftSelected] = useState(null);
@@ -137,6 +148,21 @@ export default memo(() => {
           </React.Fragment>
         ))}
       </Groups>
+      <Groups>
+        {Object.entries(withoutGroupIds).map(([region, realmIds]) => (
+          <React.Fragment key={region}>
+            <h3>{`${region}: `}</h3>
+            <ul>
+              {realmIds.map(id => (
+                <li key={'ungrouped_realm' + id}>
+                  <span>{realmsById[id].name}</span>
+                  <span>{realmsById[id].merged_realms}</span>
+                </li>
+              ))}
+            </ul>
+          </React.Fragment>
+        ))}
+      </Groups>
     </Container>
   );
 });
@@ -174,6 +200,7 @@ const Groups = styled.div`
   min-width: 300px;
   margin-left: 50px;
   color: #dcdcdc;
+  overflow: auto;
   > h3 {
     margin: 12px 0 6px;
     white-space: nowrap;
@@ -185,6 +212,13 @@ const Groups = styled.div`
     li {
       button {
         margin-left: 8px;
+      }
+      > span:first-child {
+        color: white;
+        margin-right: 4px;
+      }
+      > span:last-child {
+        color: grey;
       }
     }
   }
