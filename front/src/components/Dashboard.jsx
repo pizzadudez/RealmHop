@@ -27,11 +27,16 @@ const stateSelector = createSelector(
 
         return obj;
       }, {});
+    const connected = Object.values(shardsById)
+      .filter(shard => !shard.selected && shard.connected_to)
+      .map(shard => shard.id);
+
     return {
       issues,
       shardsById,
       orderedIds,
       unselected,
+      connected,
     };
   }
 );
@@ -56,7 +61,7 @@ const SortableList = SortableContainer(
 
 export default memo(() => {
   const dispatch = useDispatch();
-  const { issues, shardsById, orderedIds, unselected } = useSelector(
+  const { issues, shardsById, orderedIds, unselected, connected } = useSelector(
     stateSelector
   );
 
@@ -68,6 +73,10 @@ export default memo(() => {
     },
     [dispatch, unselected]
   );
+  const selectConnected = useCallback(() => dispatch(selectMany(connected)), [
+    dispatch,
+    connected,
+  ]);
 
   const [sorting, setSorting] = useState(false);
   const onSortStart = useCallback(() => {
@@ -98,7 +107,15 @@ export default memo(() => {
         />
       </div>
       <Issues>
-        <IssueList key="connected"></IssueList>
+        {!!connected.length && (
+          <IssueList key="connected">
+            <button onClick={selectConnected}>Select All</button>
+            <span>Connected</span>
+            {connected.map(id => (
+              <DeselectedSlide key={id} shard={shardsById[id]} />
+            ))}
+          </IssueList>
+        )}
         {issues.map(
           issue =>
             unselected[issue.name] && (
