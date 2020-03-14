@@ -89,12 +89,35 @@ exports.init = () => {
   });
   createTables(stmts);
 
-  // default issue needed for other operations
-  db.prepare(
+  // Insert default issues
+  const createIssue = db.prepare(
     `INSERT OR IGNORE INTO issues
     (name, description) VALUES(@name, @description)`
-  ).run({
-    name: 'connected',
-    description: 'Shard is currently connected with another.',
-  });
+  );
+  db.transaction(arr => arr.forEach(issue => createIssue.run(issue)))(
+    defaultIssues
+  );
 };
+
+const defaultIssues = [
+  {
+    name: 'Unknown',
+    description: 'Undetermined issue, could be a good shard to farm on later.',
+  },
+  {
+    name: 'Check later',
+    description: 'Native farmers or boxers that might go away.',
+  },
+  {
+    name: 'Hopping boxer',
+    description: 'Might leave if pressured enough.',
+  },
+  {
+    name: 'Stubborn boxer',
+    description: 'Non hopping boxer that will not leave.',
+  },
+  {
+    name: 'Crowded',
+    description: 'This shard is not worth checking again today.',
+  },
+];

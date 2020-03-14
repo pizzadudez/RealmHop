@@ -2,7 +2,6 @@ import React, { memo, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { createSelector } from 'reselect';
 import { useDispatch, useSelector } from 'react-redux';
-import { SortableHandle } from 'react-sortable-hoc';
 
 import {
   addIssue,
@@ -11,19 +10,13 @@ import {
 } from '../actions/shardActions';
 import Button from './common/Button';
 
-const DragHandle = SortableHandle(() => (
-  <div style={{ background: 'grey', alignItems: 'center' }}>
-    <span>||</span>
-  </div>
-));
-
 const stateSelector = createSelector(
   state => state.issues,
   state => state.shards.shardsById,
   (issues, shardsById) => ({ issues, shardsById })
 );
 
-export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
+export default memo(({ shard, idx, openConnectShard }) => {
   const dispatch = useDispatch();
   const { issues, shardsById } = useSelector(stateSelector);
 
@@ -50,7 +43,7 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
 
   return (
     <Container idx={idx} connected={!!shard.connected_to}>
-      <Slide expand={!disableExpand}>
+      <Slide>
         <span>{shard.realm.name}</span>
         {shard.connected_with && (
           <div style={{ fontSize: '0.75rem' }}>
@@ -62,32 +55,58 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
           </div>
         )}
       </Slide>
-      <DragHandle />
+      <Menu>
+        {!shard.connected_to && (
+          <>
+            {issues.map(issue => (
+              <Button key={issue.id} onClick={addIssueHandlers[issue.id]}>
+                {issue.name}
+              </Button>
+            ))}
+            {shard.group && <Button onClick={connect}>CONNECT</Button>}
+          </>
+        )}
+        {shard.connected_to && (
+          <>
+            <Button onClick={deselectConnected}>DESELECT</Button>
+            <Button onClick={disconnect}>DISCONNECT</Button>
+          </>
+        )}
+      </Menu>
     </Container>
   );
 });
 
-const Slide = styled.div`
+const Menu = styled.div`
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  z-index: 3;
+  background: palevioletred;
+  display: flex;
+  flex-wrap: wrap;
+`;
+const Container = styled.div`
   height: 50px;
-  transition: height 0.15s ease-in-out;
-  &:hover {
-    height: ${props => (props.expand ? '150px' : undefined)};
+  width: 260px;
+  position: relative;
+  background: ${props => (props.connected ? 'yellow' : 'tomato')};
+  border: 1px solid black;
+  &:hover ${Menu} {
+    opacity: 1;
   }
-
-  background: ${props => (props.expand ? 'yellow' : 'tomato')};
+  margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
+`;
+const Slide = styled.div`
+  height: 100%;
   display: flex;
   flex-direction: column;
   > span {
     font-size: 1.5rem;
     margin: 0 3px;
   }
-`;
-
-const Container = styled.div`
-  width: 240px;
-  display: grid;
-  grid-template-columns: 220px 20px;
-  border: 1px solid black;
-  margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
-  user-select: none;
 `;

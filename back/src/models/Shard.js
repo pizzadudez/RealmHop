@@ -22,7 +22,9 @@ exports.getAll = () => {
         realm: realmsById[s.realm],
         issues: [],
         ...(realmsById[s.realm].group_id && {
-          group: shardGroupsById[realmsById[s.realm].group_id],
+          group: shardGroupsById[realmsById[s.realm].group_id].filter(
+            id => id !== s.id
+          ),
         }),
       },
     ])
@@ -67,6 +69,7 @@ exports.getOne = id => {
     .get(id);
   const zone = db.prepare(`SELECT * from zones WHERE id=?`).get(shard.zone);
   const realm = db.prepare(`SELECT * from realms WHERE id=?`).get(shard.realm);
+  const shardGroupsById = getShardGroups();
   const connectedWith = db
     .prepare(`SELECT id from shards WHERE connected_to=?`)
     .pluck()
@@ -90,11 +93,15 @@ exports.getOne = id => {
       created_at: i.created_at,
     })
   );
+
   return {
     ...shard,
     realm,
     zone,
     ...(connectedWith.length && { connected_with: connectedWith }),
+    ...(realm.group_id && {
+      group: shardGroupsById[realm.group_id].filter(id => id !== shard.id),
+    }),
   };
 };
 // Select 1 or multiple shards

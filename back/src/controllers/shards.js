@@ -47,19 +47,9 @@ exports.selectMany = async (req, res, next) => {
     res.sendStatus(500);
   }
 };
-exports.updatePositions = async (req, res, next) => {
-  try {
-    ShardModel.updatePositions(req.body);
-    const shards = ShardModel.getAll();
-    res.status(200).json(shards);
-  } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
-  }
-};
+
 exports.connect = async (req, res, next) => {
   try {
-    IssueModel.add(req.params.id, { connect: true });
     ShardModel.connect(req.params.id, req.body);
     const updatedShard = ShardModel.getOne(req.params.id);
     res.status(200).json(updatedShard);
@@ -73,6 +63,17 @@ exports.disconnect = async (req, res, next) => {
     ShardModel.disconnect(req.params.id);
     const updatedShard = ShardModel.getOne(req.params.id);
     res.status(200).json(updatedShard);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+};
+
+exports.updatePositions = async (req, res, next) => {
+  try {
+    ShardModel.updatePositions(req.body);
+    const shards = ShardModel.getAll();
+    res.status(200).json(shards);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

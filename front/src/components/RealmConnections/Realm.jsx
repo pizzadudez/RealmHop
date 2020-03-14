@@ -9,7 +9,7 @@ export default memo(({ realm, group, onChange, checked }) => (
         name={group}
         value={realm.id}
         onChange={onChange}
-        checked={checked}
+        defaultChecked={false}
       />
       {realm.name}
       <div style={{ color: 'grey', fontSize: '0.8rem' }}>

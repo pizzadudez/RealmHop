@@ -15,7 +15,7 @@ const stateSelector = createSelector(
   state => state.shards,
   (issues, { shardsById, orderedIds }) => {
     const unselected = Object.values(shardsById)
-      .filter(shard => !shard.selected)
+      .filter(shard => !shard.selected && !shard.connected_to)
       .sort(
         (a, b) =>
           new Date(a.issues[0].created_at) - new Date(b.issues[0].created_at)
@@ -38,20 +38,18 @@ const stateSelector = createSelector(
 
 const SortableSlide = SortableElement(props => <SelectedSlide {...props} />);
 const SortableList = SortableContainer(
-  ({ ids, shardsById, openConnectShard }) => (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      Selected
-      <div>
-        {ids.map((id, idx) => (
-          <SortableSlide
-            key={'sortable-slide-' + id}
-            index={idx}
-            idx={idx}
-            shard={shardsById[id]}
-            openConnectShard={openConnectShard}
-          />
-        ))}
-      </div>
+  ({ ids, shardsById, openConnectShard, sorting }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', marginRight: 18 }}>
+      {ids.map((id, idx) => (
+        <SortableSlide
+          key={'sortable-slide-' + id}
+          index={idx}
+          idx={idx}
+          shard={shardsById[id]}
+          openConnectShard={openConnectShard}
+          disableExpand={sorting}
+        />
+      ))}
     </div>
   )
 );
@@ -63,18 +61,25 @@ export default memo(() => {
   );
 
   const [connectOpen, setConnectOpen] = useState([]); // [id, idx] (shard)
-  const onSortEnd = useCallback(
-    ({ oldIndex, newIndex }) => {
-      const newOrder = arrayMove(orderedIds, oldIndex, newIndex);
-      dispatch(sortShards(newOrder));
-    },
-    [dispatch, orderedIds]
-  );
+
   const selectCategory = useCallback(
     category => () => {
       dispatch(selectMany(unselected[category]));
     },
     [dispatch, unselected]
+  );
+
+  const [sorting, setSorting] = useState(false);
+  const onSortStart = useCallback(() => {
+    setSorting(true);
+  }, []);
+  const onSortEnd = useCallback(
+    ({ oldIndex, newIndex }) => {
+      setSorting(false);
+      const newOrder = arrayMove(orderedIds, oldIndex, newIndex);
+      dispatch(sortShards(newOrder));
+    },
+    [dispatch, orderedIds]
   );
 
   return (
@@ -86,10 +91,14 @@ export default memo(() => {
           shardsById={shardsById}
           openConnectShard={setConnectOpen}
           onSortEnd={onSortEnd}
+          onSortStart={onSortStart}
+          useDragHandle
+          sorting={sorting}
         />
       </div>
       <Issues>
-        {[{ name: 'connected' }, ...issues].map(
+        <IssueList key="connected"></IssueList>
+        {issues.map(
           issue =>
             unselected[issue.name] && (
               <IssueList key={issue.name}>

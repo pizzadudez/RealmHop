@@ -74,6 +74,7 @@ export default memo(() => {
     }
   }, [leftSelected, rightFilter, realmsById]);
 
+  // Actions
   const connect = useCallback(() => {
     dispatch(addRealmConnection(leftSelected, rightSelected));
     setLeftSelected(null);
