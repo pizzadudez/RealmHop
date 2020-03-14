@@ -57,8 +57,8 @@ export default memo(() => {
   const leftRealms = useMemo(
     () =>
       Object.values(realmsById).filter(realm => {
-        const { name, connected_realms } = realm;
-        return [name, connected_realms].some(
+        const { name, merged_realms } = realm;
+        return [name, merged_realms].some(
           field => field && field.toLowerCase().includes(leftFilter)
         );
       }),
@@ -75,8 +75,8 @@ export default memo(() => {
             realm.region === leftRealm.region
         )
         .filter(realm => {
-          const { name, connected_realms } = realm;
-          return [name, connected_realms].some(
+          const { name, merged_realms } = realm;
+          return [name, merged_realms].some(
             field => field && field.toLowerCase().includes(rightFilter)
           );
         });
@@ -88,7 +88,7 @@ export default memo(() => {
   // Actions
   const connect = useCallback(() => {
     dispatch(addRealmConnection(leftSelected, rightSelected));
-    setLeftSelected(null);
+    // setLeftSelected(null);
     setRightSelected(null);
   }, [dispatch, leftSelected, rightSelected]);
   const disconnect = useCallback(

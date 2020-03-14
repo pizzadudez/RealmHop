@@ -13,7 +13,7 @@ export default memo(({ realm, group, onChange, checked }) => (
       />
       {realm.name}
       <div style={{ color: 'grey', fontSize: '0.8rem' }}>
-        {realm.connected_realms}
+        {realm.merged_realms}
       </div>
     </label>
   </Container>
