@@ -12,9 +12,7 @@ import {
 import Button from './common/Button';
 
 const DragHandle = SortableHandle(() => (
-  <div
-    style={{ background: 'grey', alignItems: 'center', cursor: 'row-resize' }}
-  >
+  <div style={{ background: 'grey', alignItems: 'center' }}>
     <span>||</span>
   </div>
 ));
@@ -77,35 +75,6 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
   );
 });
 
-const Title = styled.div`
-  font-size: 1.5rem;
-  margin: 0 3px;
-`;
-const ExpandedMenu = styled.div`
-  height: 0;
-  opacity: 0;
-  display: none;
-  transition: all 1.25s ease-in-out;
-  background: darkgrey;
-`;
-const Slide = styled.div`
-  max-height: 46px;
-  overflow: hidden;
-  transition: max-height 0.5s ease-in-out;
-  &:hover {
-    max-height: ${props => (props.expand ? '400px' : undefined)};
-    > ${ExpandedMenu} {
-      height: auto;
-      opacity: 1;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-  background: ${props => (props.expand ? 'yellow' : 'tomato')};
-  display: flex;
-  flex-direction: column;
-`;
-
 const Container = styled.div`
   width: 240px;
   display: grid;
@@ -113,4 +82,29 @@ const Container = styled.div`
   border: 1px solid black;
   margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
   user-select: none;
+`;
+const Slide = styled.div`
+  max-height: 46px;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out;
+  &:hover {
+    max-height: ${props => (props.expand ? '400px' : '46px')};
+  }
+  background: ${props => (props.expand ? 'yellow' : 'tomato')};
+  display: flex;
+  flex-direction: column;
+`;
+const Title = styled.div`
+  height: 46px;
+  font-size: 1.5rem;
+  margin: 0 3px;
+  > span {
+    display: inline-block;
+    height: 100%;
+  }
+`;
+const ExpandedMenu = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: darkgrey;
 `;

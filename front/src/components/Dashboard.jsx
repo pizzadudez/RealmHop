@@ -90,10 +90,11 @@ export default memo(() => {
           ids={orderedIds}
           shardsById={shardsById}
           openConnectShard={setConnectOpen}
+          sorting={sorting}
           onSortEnd={onSortEnd}
           onSortStart={onSortStart}
           useDragHandle
-          sorting={sorting}
+          lockAxis="y"
         />
       </div>
       <Issues>
