@@ -10,7 +10,8 @@ exports.getAll = () => {
   const shards = db
     .prepare(
       `SELECT id, selected, position, zone_id AS zone,
-      realm_id AS realm, connected_to FROM shards`
+      realm_id AS realm, connected_to FROM shards
+      WHERE inactive=0`
     )
     .all();
   const shardsById = Object.fromEntries(

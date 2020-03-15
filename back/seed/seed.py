@@ -40,7 +40,13 @@ def seed_shards():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
     c.execute('INSERT OR IGNORE INTO zones (name) VALUES (?)', ('nazjatar', ))
+
+    c.execute('UPDATE shards SET inactive=1')
     for realm in realms:
+        c.execute("""UPDATE shards SET inactive=0 WHERE
+            zone_id = (SELECT id FROM zones WHERE name=?)
+            AND realm_id = (SELECT id FROM realms WHERE name=?)""",
+                  ('nazjatar', realm))
         c.execute("""INSERT OR IGNORE INTO shards (zone_id, realm_id)
             SELECT z.id, r.id FROM
             (SELECT id FROM zones WHERE name=?) as z CROSS JOIN
@@ -51,5 +57,5 @@ def seed_shards():
 
 
 if __name__ == '__main__':
-    seed_realms()
+    # seed_realms()
     seed_shards()
