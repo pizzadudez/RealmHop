@@ -140,7 +140,8 @@ export default memo(() => {
             <ul>
               {realmIds.map(id => (
                 <li key={'group_realm_' + id}>
-                  {realmsById[id].name}
+                  <span>{realmsById[id].name}</span>
+                  <span>{realmsById[id].merged_realms}</span>
                   <button onClick={disconnect(id)}>X</button>
                 </li>
               ))}
@@ -217,7 +218,7 @@ const Groups = styled.div`
         color: white;
         margin-right: 4px;
       }
-      > span:last-child {
+      > span:nth-child(2) {
         color: grey;
       }
     }

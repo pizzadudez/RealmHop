@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
 import { updatePositions } from '../actions/shardActions';
+import Button from './common/Button';
 
 const stateSelector = createSelector(
   state => state.shards.orderedIds,
@@ -22,15 +23,15 @@ export default memo(() => {
 
   return (
     <Container>
-      <button onClick={updatePositionsHandler}>Update Positions</button>
       <Menu>
         <NavLink to="/">
-          <button>Main</button>
+          <Button>Main</Button>
         </NavLink>
         <NavLink to="/realms">
-          <button>Realms</button>
+          <Button>Realms</Button>
         </NavLink>
       </Menu>
+      <Button onClick={updatePositionsHandler}>Update Positions</Button>
     </Container>
   );
 });
@@ -40,10 +41,6 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   background: #444;
-  button {
-    height: 40px;
-    min-width: 140px;
-  }
 `;
 const Menu = styled.div`
   display: grid;

@@ -84,6 +84,14 @@ exports.init = () => {
       )`
     )
   );
+  stmts.push(
+    db.prepare(
+      `CREATE TABLE IF NOT EXISTS settings (
+        name TEXT NOT NULL UNIQUE PRIMARY KEY,
+        value TEXT
+      )`
+    )
+  );
   const createTables = db.transaction(stmts => {
     stmts.forEach(stmt => stmt.run());
   });
@@ -92,13 +100,27 @@ exports.init = () => {
   // Insert default issues
   const createIssue = db.prepare(
     `INSERT OR IGNORE INTO issues
-    (name, description) VALUES(@name, @description)`
+    (name, description) VALUES (@name, @description)`
   );
   db.transaction(arr => arr.forEach(issue => createIssue.run(issue)))(
     defaultIssues
   );
+  // Insert default settings
+  const createSetting = db.prepare(
+    `INSERT OR IGNORE INTO settings (name, value)
+    VALUES (@name, @value)`
+  );
+  db.transaction(arr => arr.forEach(setting => createSetting.run(setting)))(
+    defaultSettings
+  );
 };
 
+const defaultSettings = [
+  {
+    name: 'selected_zone',
+    value: '1',
+  },
+];
 const defaultIssues = [
   {
     name: 'Unknown',
