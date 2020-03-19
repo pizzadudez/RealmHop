@@ -54,7 +54,9 @@ export const selectMany = (shardIds, insertLast = false) => dispatch => {
 export const sortShards = orderedIds => dispatch => {
   dispatch({ type: SHARDS_SORTED, payload: orderedIds });
 };
-export const updatePositions = orderedIds => dispatch => {
+export const updatePositions = () => (dispatch, getState) => {
+  const selectedZoneId = getState().zones.selectedId;
+  const orderedIds = getState().zones.shardOrders[selectedZoneId];
   axios
     .post('/api/shards/positions', { ordered_ids: orderedIds })
     .then(res => dispatch({ type: FETCH_SHARDS, payload: res.data }));

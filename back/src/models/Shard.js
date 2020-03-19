@@ -48,16 +48,17 @@ exports.getAll = () => {
       ORDER BY created_at DESC`
     )
     .all();
-  issues.forEach(i =>
-    shardsById[i.shard_id].issues.push({
-      id: i.id,
-      type: i.name,
-      description: i.description,
-      color: i.color,
-      created_at: i.created_at,
-    })
+  issues.forEach(
+    i =>
+      shardsById[i.shard_id] &&
+      shardsById[i.shard_id].issues.push({
+        id: i.id,
+        type: i.name,
+        description: i.description,
+        color: i.color,
+        created_at: i.created_at,
+      })
   );
-  // Add
 
   return shardsById;
 };

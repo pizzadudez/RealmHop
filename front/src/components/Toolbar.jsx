@@ -5,31 +5,42 @@ import { NavLink } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
 import { updatePositions } from '../actions/shardActions';
+import { selectZone, setActiveZone } from '../actions/zoneActions';
 import Button from './common/Button';
 
 const stateSelector = createSelector(
-  state => state.shards.orderedIds,
-  orderedIds => ({ orderedIds })
+  state => state.zones.zonesById,
+  zonesById => ({ zones: Object.values(zonesById) })
 );
 
 export default memo(() => {
   const dispatch = useDispatch();
-  const { orderedIds } = useSelector(stateSelector);
+  const { zones } = useSelector(stateSelector);
 
   const updatePositionsHandler = useCallback(
-    () => dispatch(updatePositions(orderedIds)),
-    [dispatch, orderedIds]
+    () => dispatch(updatePositions()),
+    [dispatch]
+  );
+  // TODO: set active zone elsewhere
+  const selectZoneHandler = useCallback(
+    id => () => {
+      dispatch(selectZone(id));
+      dispatch(setActiveZone(id));
+    },
+    [dispatch]
   );
 
   return (
     <Container>
       <Menu>
-        <NavLink to="/">
-          <Button>Main</Button>
-        </NavLink>
         <NavLink to="/realms">
           <Button>Realms</Button>
         </NavLink>
+        {zones.map(zone => (
+          <NavLink key={zone.id} to="/">
+            <Button onClick={selectZoneHandler(zone.id)}>{zone.name}</Button>
+          </NavLink>
+        ))}
       </Menu>
       <Button onClick={updatePositionsHandler}>Update Positions</Button>
     </Container>

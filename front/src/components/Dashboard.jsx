@@ -12,29 +12,50 @@ import ConnectModal from './ConnectModal';
 
 const stateSelector = createSelector(
   state => state.issues,
+  state => state.zones,
   state => state.shards,
-  (issues, { shardsById, orderedIds }) => {
-    const unselected = Object.values(shardsById)
-      .filter(shard => !shard.selected && !shard.connected_to)
+  (issues, { zonesById, selectedId, shardOrders }, { shardsById }) => {
+    const shardIds = zonesById[selectedId].shard_ids;
+
+    const unselected = shardIds
+      .filter(id => !shardsById[id].selected && !shardsById[id].connected_to)
       .sort(
         (a, b) =>
-          new Date(a.issues[0].created_at) - new Date(b.issues[0].created_at)
+          new Date(shardsById[a].issues[0].created_at) -
+          new Date(shardsById[b].issues[0].created_at)
       )
-      .reduce((obj, shard) => {
-        const issueType = shard.issues[0].type;
+      .reduce((obj, id) => {
+        const issueType = shardsById[id].issues[0].type;
         obj[issueType] = obj[issueType] || [];
-        obj[issueType].push(shard.id);
-
+        obj[issueType].push(id);
         return obj;
       }, {});
-    const connected = Object.values(shardsById)
-      .filter(shard => !shard.selected && shard.connected_to)
-      .map(shard => shard.id);
+
+    const connected = shardIds.filter(
+      id => !shardsById[id].selected && shardsById[id].connected_to
+    );
+
+    // const unselected = Object.values(shardsById)
+    //   .filter(shard => !shard.selected && !shard.connected_to)
+    //   .sort(
+    //     (a, b) =>
+    //       new Date(a.issues[0].created_at) - new Date(b.issues[0].created_at)
+    //   )
+    //   .reduce((obj, shard) => {
+    //     const issueType = shard.issues[0].type;
+    //     obj[issueType] = obj[issueType] || [];
+    //     obj[issueType].push(shard.id);
+
+    //     return obj;
+    //   }, {});
+    // const connected = Object.values(shardsById)
+    //   .filter(shard => !shard.selected && shard.connected_to)
+    //   .map(shard => shard.id);
 
     return {
       issues,
       shardsById,
-      orderedIds,
+      orderedIds: shardOrders[selectedId],
       unselected,
       connected,
     };
