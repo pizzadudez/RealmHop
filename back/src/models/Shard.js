@@ -22,14 +22,26 @@ exports.getAll = () => {
         zone: zonesById[s.zone],
         realm: realmsById[s.realm],
         issues: [],
-        ...(realmsById[s.realm].group_id && {
-          group: shardGroupsById[realmsById[s.realm].group_id].filter(
-            id => id !== s.id
-          ),
-        }),
+        // ...(realmsById[s.realm].group_id && {
+        //   group: shardGroupsById[realmsById[s.realm].group_id].filter(
+        //     id => id !== s.id
+        //   ),
+        // }),
       },
     ])
   );
+  // Generate shard groups based on realm groups
+  shards.forEach(s => {
+    // group of all shards within the same realm group,
+    // from all zones, needs filtering
+    const group = shardGroupsById[shardsById[s.id].realm.group_id];
+    if (group) {
+      const filtered = group.filter(
+        id => shardsById[id].zone.id === s.zone && id !== s.id
+      );
+      shardsById[s.id].group = filtered.length ? filtered : undefined;
+    }
+  });
   // Add connected_with array on 'parent' shard of shard group
   shards.forEach(s => {
     const parentId = s.connected_to;
@@ -73,7 +85,7 @@ exports.getOne = id => {
   const realm = db.prepare(`SELECT * from realms WHERE id=?`).get(shard.realm);
   const shardGroupsById = getShardGroups();
   const connectedWith = db
-    .prepare(`SELECT id from shards WHERE connected_to=?`)
+    .prepare(`SELECT id from shards WHERE connected_to=? AND inactive=0`)
     .pluck()
     .all(id);
   const issues = db
@@ -155,10 +167,11 @@ exports.disconnect = id => {
 
 // Helpers
 const getShardGroups = () => {
+  // WARNING: Shards from different zones get grouped together
   const groups = db
     .prepare(
       `SELECT DISTINCT r.group_id AS id,
-    group_concat(s.id) OVER (
+    group_concat(s.id) FILTER (WHERE s.inactive=0) OVER (
       PARTITION BY r.group_id
     ) AS shard_ids
     FROM shards s 

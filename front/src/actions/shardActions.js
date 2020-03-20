@@ -8,6 +8,7 @@ import {
   SHARD_DESELECTED,
   SHARDS_SELECTED,
 } from './types';
+import arrayMove from 'array-move';
 
 export const addIssue = (shardId, issueId, index) => dispatch => {
   axios
@@ -60,4 +61,17 @@ export const updatePositions = () => (dispatch, getState) => {
   axios
     .post('/api/shards/positions', { ordered_ids: orderedIds })
     .then(res => dispatch({ type: FETCH_SHARDS, payload: res.data }));
+};
+
+export const moveShard = (index, position = null) => (dispatch, getState) => {
+  const selectedZoneId = getState().zones.selectedId;
+  const orderedIds = getState().zones.shardOrders[selectedZoneId];
+
+  let newIndex;
+  if (position === 'top') newIndex = 0;
+  else if (position === 'bottom') newIndex = orderedIds.length - 1;
+  else newIndex = 0; // placeholder for insert after first 'n'
+
+  const newOrder = arrayMove(orderedIds, index, newIndex);
+  dispatch({ type: SHARDS_SORTED, payload: newOrder });
 };

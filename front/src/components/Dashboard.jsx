@@ -30,27 +30,9 @@ const stateSelector = createSelector(
         obj[issueType].push(id);
         return obj;
       }, {});
-
     const connected = shardIds.filter(
       id => !shardsById[id].selected && shardsById[id].connected_to
     );
-
-    // const unselected = Object.values(shardsById)
-    //   .filter(shard => !shard.selected && !shard.connected_to)
-    //   .sort(
-    //     (a, b) =>
-    //       new Date(a.issues[0].created_at) - new Date(b.issues[0].created_at)
-    //   )
-    //   .reduce((obj, shard) => {
-    //     const issueType = shard.issues[0].type;
-    //     obj[issueType] = obj[issueType] || [];
-    //     obj[issueType].push(shard.id);
-
-    //     return obj;
-    //   }, {});
-    // const connected = Object.values(shardsById)
-    //   .filter(shard => !shard.selected && shard.connected_to)
-    //   .map(shard => shard.id);
 
     return {
       issues,

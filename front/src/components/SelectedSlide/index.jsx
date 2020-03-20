@@ -8,6 +8,7 @@ import {
   addIssue,
   connectShard,
   disconnectShard,
+  moveShard,
 } from '../../actions/shardActions';
 import IssueButton from './IssueButton';
 
@@ -43,6 +44,10 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
     () => dispatch(connectShard(shard.id, shard.connected_to, idx)),
     [dispatch, shard]
   );
+  const moveShardTo = useCallback(
+    position => () => dispatch(moveShard(idx, position)),
+    [dispatch, idx]
+  );
 
   const connectedMenu = (
     <ExpandedMenu>
@@ -56,6 +61,11 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
       <Slide expand={!disableExpand} connected={shard.connected_to}>
         <Title>
           <span>{shard.realm.name}</span>
+          <div style={{ display: 'inline-flex' }}>
+            <button onClick={moveShardTo('top')}>top</button>
+            <button onClick={moveShardTo('bottom')}>bot</button>
+            <button onClick={moveShardTo()}>after</button>
+          </div>
         </Title>
         {shard.connected_to ? (
           connectedMenu
