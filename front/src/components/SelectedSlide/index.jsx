@@ -12,7 +12,7 @@ import {
 } from '../../actions/shardActions';
 import IssueButton from './IssueButton';
 
-const DragHandle = SortableHandle(() => <StyledHandle />);
+const DragHandle = SortableHandle(() => <StyledDragHandle />);
 
 const stateSelector = createSelector(
   state => state.issues,
@@ -61,11 +61,6 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
       <Slide expand={!disableExpand} connected={shard.connected_to}>
         <Title>
           <span>{shard.realm.name}</span>
-          <div style={{ display: 'inline-flex' }}>
-            <button onClick={moveShardTo('top')}>top</button>
-            <button onClick={moveShardTo('bottom')}>bot</button>
-            <button onClick={moveShardTo()}>after</button>
-          </div>
         </Title>
         {shard.connected_to ? (
           connectedMenu
@@ -96,7 +91,20 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
           </ExpandedMenu>
         )}
       </Slide>
-      <DragHandle />
+      <StyledHandle>
+        <div
+          style={{
+            height: '100%',
+            display: 'grid',
+            gridTemplateRows: '50% 50%',
+          }}
+        >
+          <button onClick={moveShardTo('top')}>&#8657;</button>
+          <button onClick={moveShardTo('bottom')}>&#8659;</button>
+          {/* <button onClick={moveShardTo()}>after</button> */}
+        </div>
+        <DragHandle />
+      </StyledHandle>
     </Container>
   );
 });
@@ -104,7 +112,7 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
 const Container = styled.div`
   width: 240px;
   display: grid;
-  grid-template-columns: 220px 20px;
+  grid-template-columns: 200px 40px;
   border: 1px solid black;
   margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
   user-select: none;
@@ -123,12 +131,17 @@ const Slide = styled.div`
   }
 `;
 const Title = styled.div`
+  display: flex;
+  justify-content: space-between;
   height: 43px;
   margin-bottom: 3px;
   font-size: 1.5rem;
   > span {
     display: inline-block;
     height: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 `;
 const ExpandedMenu = styled.div`
@@ -146,10 +159,17 @@ const Issues = styled.div`
 const StyledHandle = styled.div`
   background: grey;
   display: flex;
+  button {
+    padding: 2px;
+  }
+`;
+const StyledDragHandle = styled.div`
+  width: 100%;
+  display: flex;
   justify-content: center;
-  &::before {
+  align-items: center;
+  &::after {
     content: '||';
-    align-self: center;
-    margin-top: -4px;
+    margin-bottom: 4px;
   }
 `;
