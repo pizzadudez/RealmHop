@@ -180,9 +180,11 @@ const getShardGroups = () => {
     )
     .all();
   return Object.fromEntries(
-    groups.map(group => {
-      const shardIds = group.shard_ids.split(',').map(Number);
-      return [group.id, shardIds];
-    })
+    groups
+      .filter(group => group.shard_ids !== null)
+      .map(group => {
+        const shardIds = group.shard_ids.split(',').map(Number);
+        return [group.id, shardIds];
+      })
   );
 };
