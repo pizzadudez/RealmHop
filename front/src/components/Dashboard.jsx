@@ -110,15 +110,6 @@ export default memo(() => {
         />
       </div>
       <Issues>
-        {!!connected.length && (
-          <IssueList key="connected">
-            <button onClick={selectConnected}>Select All</button>
-            <span>Connected</span>
-            {connected.map(id => (
-              <DeselectedSlide key={id} shard={shardsById[id]} />
-            ))}
-          </IssueList>
-        )}
         {issues.map(
           issue =>
             unselected[issue.name] && (
@@ -130,6 +121,15 @@ export default memo(() => {
                 ))}
               </IssueList>
             )
+        )}
+        {!!connected.length && (
+          <IssueList key="connected">
+            <button onClick={selectConnected}>Select All</button>
+            <span>Connected</span>
+            {connected.map(id => (
+              <DeselectedSlide key={id} shard={shardsById[id]} />
+            ))}
+          </IssueList>
         )}
       </Issues>
     </Container>

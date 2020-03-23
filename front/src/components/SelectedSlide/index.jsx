@@ -60,7 +60,7 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
     <Container idx={idx} connected={!!shard.connected_to}>
       <Slide expand={!disableExpand} connected={shard.connected_to}>
         <Title>
-          <span>{shard.realm.name}</span>
+          <span>{idx + 1 + '. ' + shard.realm.name}</span>
         </Title>
         {shard.connected_to ? (
           connectedMenu

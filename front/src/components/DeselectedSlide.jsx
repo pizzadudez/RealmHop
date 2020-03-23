@@ -25,7 +25,10 @@ export default memo(({ shard, idx }) => {
     <Container idx={idx}>
       <Slide>
         <span>{shard.realm.name}</span>
-        {shard.connected_with && (
+        {shard.connected_to && (
+          <span>{shardsById[shard.connected_to].realm.name}</span>
+        )}
+        {/* {shard.connected_with && (
           <div style={{ fontSize: '0.75rem' }}>
             {shard.connected_with.map(id => (
               <span key={id} style={{ color: '#444', marginRight: 2 }}>
@@ -33,7 +36,7 @@ export default memo(({ shard, idx }) => {
               </span>
             ))}
           </div>
-        )}
+        )} */}
       </Slide>
       <Menu>
         <button onClick={selectHandler()}>Top</button>
@@ -67,4 +70,9 @@ const Container = styled.div`
   }
   margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
 `;
-const Slide = styled.div``;
+const Slide = styled.div`
+  span:nth-child(2) {
+    color: grey;
+    margin-left: 8px;
+  }
+`;
