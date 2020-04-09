@@ -15,8 +15,8 @@ import IssueButton from './IssueButton';
 const DragHandle = SortableHandle(() => <StyledDragHandle />);
 
 const stateSelector = createSelector(
-  state => state.issues,
-  state => state.shards.shardsById,
+  (state) => state.issues,
+  (state) => state.shards.shardsById,
   (issues, shardsById) => ({ issues, shardsById })
 );
 
@@ -26,7 +26,7 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
 
   const addIssueHandlers = useMemo(() => {
     return Object.fromEntries(
-      issues.map(issue => {
+      issues.map((issue) => {
         const callback = () => dispatch(addIssue(shard.id, issue.id, idx));
         return [issue.id, callback];
       })
@@ -45,7 +45,7 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
     [dispatch, shard]
   );
   const moveShardTo = useCallback(
-    position => () => dispatch(moveShard(idx, position)),
+    (position) => () => dispatch(moveShard(idx, position)),
     [dispatch, idx]
   );
 
@@ -61,25 +61,24 @@ export default memo(({ shard, idx, openConnectShard, disableExpand }) => {
       <Slide expand={!disableExpand} connected={shard.connected_to}>
         <Title>
           <span>{idx + 1 + '. ' + shard.realm.name}</span>
+          {shard.connected_with && (
+            <span>
+              {shard.connected_with.reduce(
+                (string, id) => string + ' ' + shardsById[id].realm.name,
+                ''
+              )}
+            </span>
+          )}
         </Title>
         {shard.connected_to ? (
           connectedMenu
         ) : (
           <ExpandedMenu>
-            {shard.connected_with && (
-              <div style={{ fontSize: '0.75rem' }}>
-                {shard.connected_with.map(id => (
-                  <span key={id} style={{ color: '#444', marginRight: 2 }}>
-                    {shardsById[id].realm.name}
-                  </span>
-                ))}
-              </div>
-            )}
             {shard.group && (
               <IssueButton onClick={connect}>Connect With</IssueButton>
             )}
             <Issues>
-              {issues.map(issue => (
+              {issues.map((issue) => (
                 <IssueButton
                   key={issue.id}
                   onClick={addIssueHandlers[issue.id]}
@@ -114,34 +113,38 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 200px 40px;
   border: 1px solid black;
-  margin-bottom: ${props => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
+  margin-bottom: ${(props) => ((props.idx + 1) % 4 === 0 ? '10px' : undefined)};
   user-select: none;
 `;
 const Slide = styled.div`
   max-height: 43px;
   transition: max-height 0.5s ease;
   padding: 3px 2px;
-  background: ${props => (props.connected ? 'yellow' : 'tomato')};
+  background: ${(props) => (props.connected ? 'yellow' : 'tomato')};
 
   overflow: hidden;
   display: flex;
   flex-direction: column;
   &:hover {
-    max-height: ${props => (props.expand ? '400px' : '46px')};
+    max-height: ${(props) => (props.expand ? '400px' : '46px')};
   }
 `;
 const Title = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   height: 43px;
   margin-bottom: 3px;
   font-size: 1.5rem;
-  > span {
+  span:first-child {
     display: inline-block;
-    height: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    height: 100%;
+  }
+  span:nth-child(2) {
+    font-size: 0.8rem;
+    color: #2b2b2b;
   }
 `;
 const ExpandedMenu = styled.div`
